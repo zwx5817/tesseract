@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tesseract - Minecraft服务器</title>
+    <title>Tesseract - Minecraft Server</title>
     <style>
         * {
             margin: 0;
@@ -22,10 +22,25 @@
             min-height: 100vh;
         }
 
+        .lang-wrap{
+            position:fixed;
+            top:16px;
+            right:16px;
+            z-index:99;
+        }
+        .lang-btn{
+            padding:6px 12px;
+            background:#222;
+            color:#fff;
+            border:1px solid #444;
+            cursor:pointer;
+            border-radius:6px;
+        }
+
         .container {
             max-width: 850px;
             margin: 0 auto;
-            padding: 30px 16px;
+            padding: 60px 16px 30px;
         }
 
         .header {
@@ -122,6 +137,26 @@
             margin: 0;
         }
 
+        .server-item{
+            margin-bottom:24px;
+            padding-bottom:16px;
+            border-bottom:1px solid #2a2a2a;
+        }
+        .server-item:last-child{
+            border-bottom:none;
+            margin-bottom:0;
+            padding-bottom:0;
+        }
+        .server-desc{
+            color:#aaa;
+            font-size:14px;
+            margin-top:4px;
+        }
+        .warn-text{
+            color:#ff6b6b;
+            margin-top:6px;
+        }
+
         .footer {
             text-align: center;
             margin-top: 50px;
@@ -137,21 +172,13 @@
             line-height:1.8;
         }
 
-        .status-card{
-            text-align:center;
-        }
-        .status-dot-online{
+        .dot-online{
             color:#28c740;
         }
-        .status-dot-offline{
+        .dot-offline{
             color:#e53935;
         }
-        #statusText{
-            font-size:22px;
-            font-weight:bold;
-        }
         #refreshStatusBtn{
-            margin-top:14px;
             padding:10px 22px;
             background:#3070d8;
             color:white;
@@ -182,45 +209,111 @@
             h1 {
                 letter-spacing:2px;
             }
+            .lang-wrap{
+                top:8px;
+                right:8px;
+            }
         }
+
+        /* 多语言显示控制 */
+        [data-lang="zh"]{ display:block; }
+        [data-lang="en"]{ display:none; }
+        html.lang-en [data-lang="zh"]{ display:none; }
+        html.lang-en [data-lang="en"]{ display:block; }
     </style>
 </head>
 <body>
+    <div class="lang-wrap">
+        <button class="lang-btn" id="changeLangBtn">Change Language</button>
+    </div>
+
     <div class="container">
         <div class="header">
             <h1>Tesseract</h1>
-            <div class="subtitle">Minecraft 服务器</div>
-        </div>
-
-        <div class="card status-card">
-            <h2>服务器运行状态</h2>
-            <div id="statusText">检测中...</div>
-            <button id="refreshStatusBtn">重新检测状态</button>
+            <div class="subtitle">
+                <span data-lang="zh">Minecraft 服务器</span>
+                <span data-lang="en">Minecraft Server</span>
+            </div>
         </div>
 
         <div class="card">
-            <h2>服务器介绍</h2>
-            <p>欢迎来到 Tesseract Minecraft服务器！</p>
-            <p>这里是一个友好的Minecraft游戏社区，在这里你可以自由建造、生电研究，和小伙伴一同游玩。</p>
-            <p>本服务器实行入群审核制度，想要进入服务器游玩，必须加入QQ审核群完成审核，审核通过后才可进入游戏。</p>
+            <h2>
+                <span data-lang="zh">服务器运行状态</span>
+                <span data-lang="en">Server Status</span>
+            </h2>
+
+            <div class="server-item">
+                <div id="mainServerStatus"></div>
+            </div>
+
+            <div class="server-item">
+                <div id="smallServerStatus"></div>
+            </div>
+
+            <div style="text-align:center;margin-top:12px;">
+                <button id="refreshStatusBtn">
+                    <span data-lang="zh">重新检测状态</span>
+                    <span data-lang="en">Refresh Status</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>
+                <span data-lang="zh">服务器介绍</span>
+                <span data-lang="en">About Server</span>
+            </h2>
+            <p data-lang="zh">欢迎来到 Tesseract Minecraft服务器！</p>
+            <p data-lang="en">Welcome to Tesseract Minecraft Server!</p>
+
+            <p data-lang="zh">这里是一个友好的Minecraft游戏社区，在这里你可以自由建造、生电研究，和小伙伴一同游玩。</p>
+            <p data-lang="en">This is a friendly Minecraft community. You can build, research redstone contraptions and play with friends.</p>
+
+            <p data-lang="zh">本服务器实行入群审核制度，想要进入服务器游玩，必须加入QQ审核群完成审核，审核通过后才可进入游戏。</p>
+            <p data-lang="en">This server requires QQ‑group verification. You must join the QQ group and pass review before joining.</p>
+
             <div class="hot-tip">
-                <p>🔥 热知识：服务器可以用矿透</p>
+                <p data-lang="zh">🔥 热知识：服务器可以用矿透</p>
+                <p data-lang="en">🔥 Tip: X‑ray is allowed on this server</p>
             </div>
         </div>
 
         <div class="card qq-group-box">
-            <h2>如何加入服务器</h2>
-            <p>请加入我们的QQ审核群完成玩家审核</p>
-            <div class="qq-num">QQ审核群群号：421642410</div>
-            <p>加入群聊后，请阅读群公告完成审核流程，审核通过即可获取服务器相关信息。</p>
-            <a class="qq-link-btn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank">戳我直达QQ审核群 ↗</a>
+            <h2>
+                <span data-lang="zh">如何加入服务器</span>
+                <span data-lang="en">How To Join</span>
+            </h2>
+            <p data-lang="zh">请加入我们的QQ审核群完成玩家审核</p>
+            <p data-lang="en">Join our QQ group for player verification</p>
+
+            <div class="qq-num">
+                <span data-lang="zh">QQ审核群群号：</span>
+                <span data-lang="en">QQ Group ID:</span>
+                421642410
+            </div>
+
+            <p data-lang="zh">加入群聊后，请阅读群公告完成审核流程，审核通过即可获取服务器相关信息。</p>
+            <p data-lang="en">Read group announcements after joining. You will receive server info once approved.</p>
+
+            <a class="qq-link-btn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank">
+                <span data-lang="zh">戳我直达QQ审核群 ↗</span>
+                <span data-lang="en">Open QQ Group ↗</span>
+            </a>
         </div>
 
         <div class="card">
-            <h2>玩家须知</h2>
-            <p>❶ 入群后请遵守群规与服务器规则，禁止恶意破坏他人建筑。</p>
-            <p>❷ 所有玩家必须经过审核，未审核账号无法连接服务器。</p>
-            <p>❸ 若无法加入群聊，请核对QQ群号码是否正确。</p>
+            <h2>
+                <span data-lang="zh">玩家须知</span>
+                <span data-lang="en">Rules</span>
+            </h2>
+            <p data-lang="zh">❶ 入群后请遵守群规与服务器规则，禁止恶意破坏他人建筑。</p>
+            <p data-lang="en">❶ Follow group and server rules. Griefing is forbidden.</p>
+
+            <p data-lang="zh">❷ 所有玩家必须经过审核，未审核账号无法连接服务器。</p>
+            <p data-lang="en">❷ All players need verification. Unverified accounts cannot connect.</p>
+
+            <p data-lang="zh">❸ 若无法加入群聊，请核对QQ群号码是否正确。</p>
+            <p data-lang="en">❸ If you cannot join the group, double‑check the QQ group number.</p>
         </div>
 
         <div class="footer">
@@ -228,35 +321,23 @@
         </div>
         <div class="extra-footer">
             <div>Powered by Cloudflare</div>
-            <div>由zwx5817开发</div>
+            <div>
+                <span data-lang="zh">由zwx5817开发</span>
+                <span data-lang="en">Developed by zwx5817</span>
+            </div>
         </div>
     </div>
 
 <script>
-const statusTextEl = document.getElementById('statusText');
+const mainServerEl = document.getElementById('mainServerStatus');
+const smallServerEl = document.getElementById('smallServerStatus');
 const refreshBtn = document.getElementById('refreshStatusBtn');
-const api = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
+const changeLangBtn = document.getElementById('changeLangBtn');
 
-async function check(){
-    refreshBtn.disabled = true;
-    statusTextEl.innerText = "检测中...";
-    try{
-        const res = await fetch(api);
-        const data = await res.json();
-        if(data.online === true){
-            statusTextEl.innerHTML = `<span class="status-dot-online">●</span> 服务器在线`;
-        }else{
-            statusTextEl.innerHTML = `<span class="status-dot-offline">●</span> 服务器离线`;
-        }
-    }catch(e){
-        console.error(e);
-        statusTextEl.innerHTML = `<span class="status-dot-offline">●</span> 检测服务不可用`;
-    }
-    refreshBtn.disabled = false;
-}
+const apiMain = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
+const apiSmall = "https://api.mcsrvstat.us/2/play.simpfun.cn:28381";
 
-refreshBtn.addEventListener('click', check);
-window.addEventListener('load', check);
-</script>
-</body>
-</html>
+const langText = {
+    zh:{
+        loading:"检测中...",
+        mainName:"主服 
