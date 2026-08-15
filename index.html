@@ -109,7 +109,6 @@
             text-shadow: 0 0 14px rgba(84, 160, 255, 0.85);
         }
 
-        /* 戳我直达QQ按钮样式，hover上浮 */
         .qq-link-btn{
             display:inline-block;
             padding:12px 28px;
@@ -152,6 +151,33 @@
             line-height:1.8;
         }
 
+        .status-card{
+            text-align:center;
+        }
+        .status-dot-online{
+            color:#28c740;
+        }
+        .status-dot-offline{
+            color:#e53935;
+        }
+        #statusText{
+            font-size:22px;
+            font-weight:bold;
+        }
+        #refreshStatusBtn{
+            margin-top:14px;
+            padding:10px 22px;
+            background:#3070d8;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+        }
+        #refreshStatusBtn:disabled{
+            background:#444;
+            cursor:not-allowed;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -178,6 +204,12 @@
         <div class="header">
             <h1>Tesseract</h1>
             <div class="subtitle">Minecraft 服务器</div>
+        </div>
+
+        <div class="card status-card">
+            <h2>服务器运行状态</h2>
+            <div id="statusText">检测中...</div>
+            <button id="refreshStatusBtn">重新检测状态</button>
         </div>
 
         <div class="card">
@@ -213,5 +245,33 @@
             <div>由zwx5817开发</div>
         </div>
     </div>
+
+<script>
+const statusTextEl = document.getElementById('statusText');
+const refreshBtn = document.getElementById('refreshStatusBtn');
+// 第三方公开MC状态API
+const api = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
+
+async function check(){
+    refreshBtn.disabled = true;
+    statusTextEl.innerText = "检测中...";
+    try{
+        const res = await fetch(api);
+        const data = await res.json();
+        if(data.online === true){
+            statusTextEl.innerHTML = `<span class="status-dot-online">●</span> 服务器在线`;
+        }else{
+            statusTextEl.innerHTML = `<span class="status-dot-offline">●</span> 服务器离线`;
+        }
+    }catch(e){
+        console.error(e);
+        statusTextEl.innerHTML = `<span class="status-dot-offline">●</span> 检测服务不可用`;
+    }
+    refreshBtn.disabled = false;
+}
+
+refreshBtn.addEventListener('click', check);
+window.addEventListener('load', check);
+</script>
 </body>
 </html>
