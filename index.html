@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tesseract - Minecraft服务器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #171717;
+            color: #eeeeee;
+            font-family: "Microsoft Yahei", system-ui, sans-serif;
+            background-image: url("bg.jpg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.62);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 30px 16px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 50px 16px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            animation: fadeIn 1s ease-out;
+        }
+
+        h1 {
+            font-size: clamp(32px, 6vw, 52px);
+            color: #4cd964;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 18px rgba(76, 217, 100, 0.85);
+        }
+
+        .subtitle {
+            font-size: clamp(16px, 2.5vw, 20px);
+            color: #aaaaaa;
+        }
+
+        .card {
+            background: rgba(36, 36, 36, 0.92);
+            border-radius: 12px;
+            padding: clamp(20px,4vw,32px);
+            margin-bottom: 22px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+        }
+
+        h2 {
+            color: #73e086;
+            margin-bottom: 16px;
+            font-size: clamp(20px,3vw,26px);
+        }
+
+        p {
+            line-height: 1.8;
+            font-size: clamp(15px,2vw,16px);
+            color: #dddddd;
+            margin-bottom: 12px;
+        }
+
+        .qq-group-box {
+            background: rgba(44, 62, 80, 0.95);
+            padding: clamp(20px,4vw,28px);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .qq-num {
+            font-size: clamp(22px,5vw,30px);
+            color: #54a0ff;
+            font-weight: bold;
+            margin:14px 0;
+            text-shadow: 0 0 14px rgba(84, 160, 255, 0.85);
+        }
+
+        .hot-tip {
+            background: rgba(255, 150, 0, 0.15);
+            border: 1px solid rgba(255, 150, 0, 0.3);
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .hot-tip p {
+            color: #ffc873;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #777777;
+            font-size: 14px;
+        }
+
+        .extra-footer{
+            margin-top:20px;
+            text-align:center;
+            font-size:13px;
+            color:#888888;
+            line-height:1.8;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding:30px 12px;
+            }
+            h1 {
+                letter-spacing:2px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tesseract</h1>
+            <div class="subtitle">Minecraft 服务器</div>
+        </div>
+
+        <div class="card">
+            <h2>服务器介绍</h2>
+            <p>欢迎来到 Tesseract Minecraft服务器！</p>
+            <p>这里是一个友好的Minecraft游戏社区，在这里你可以自由建造、生电研究，和小伙伴一同游玩。</p>
+            <p>本服务器实行入群审核制度，想要进入服务器游玩，必须加入QQ审核群完成审核，审核通过后才可进入游戏。</p>
+            <div class="hot-tip">
+                <p>🔥 热知识：服务器可以用矿透</p>
+            </div>
+        </div>
+
+        <div class="card qq-group-box">
+            <h2>如何加入服务器</h2>
+            <p>请加入我们的QQ审核群完成玩家审核</p>
+            <div class="qq-num">QQ群：421642410</div>
+            <p>加入群聊后，请阅读群公告完成审核流程，审核通过即可获取服务器相关信息。</p>
+        </div>
+
+        <div class="card">
+            <h2>玩家须知</h2>
+            <p>❶ 入群后请遵守群规与服务器规则，禁止恶意破坏他人建筑。</p>
+            <p>❷ 所有玩家必须经过审核，未审核账号无法连接服务器。</p>
+            <p>❸ 若无法加入群聊，请核对QQ群号码是否正确。</p>
+        </div>
+
+        <div class="footer">
+            Tesseract Minecraft Server © 2026
+        </div>
+        <div class="extra-footer">
+            <div>Powered by Cloudflare</div>
+            <div>由zwx5817开发</div>
+        </div>
+    </div>
+</body>
+</html>
