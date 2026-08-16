@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tesseract - Minecraft Server</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #000000;
+            color: #eeeeee;
+            font-family: "Microsoft Yahei", system-ui, sans-serif;
+            min-height: 100vh;
+        }
+
+        .lang-wrap{
+            position:fixed;
+            top:16px;
+            right:16px;
+            z-index:99;
+        }
+        .lang-btn{
+            padding:6px 12px;
+            background:#222;
+            color:#fff;
+            border:1px solid #444;
+            cursor:pointer;
+            border-radius:6px;
+            font-size:16px;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 60px 16px 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 50px 16px;
+            background-color: #111111;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        h1 {
+            font-size: clamp(32px,8vw,52px);
+            color: #4cd964;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 18px rgba(76, 217, 100, 0.5);
+        }
+
+        .subtitle {
+            font-size: clamp(16px,3vw,20px);
+            color: #aaaaaa;
+        }
+
+        .card {
+            background-color: #111111;
+            border-radius: 12px;
+            padding: clamp(20px,4vw,32px);
+            margin-bottom: 22px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+        }
+
+        h2 {
+            color: #73e086;
+            margin-bottom: 16px;
+            font-size: clamp(20px,4vw,26px);
+        }
+
+        p {
+            line-height: 1.8;
+            font-size: clamp(15px,2.5vw,16px);
+            color: #dddddd;
+            margin-bottom: 12px;
+        }
+
+        .qq-group-box {
+            background-color: #1c1c1c;
+            padding: clamp(20px,4vw,28px);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .qq-num {
+            font-size: clamp(22px,5vw,30px);
+            color: #54a0ff;
+            font-weight: bold;
+            margin:14px 0;
+            text-shadow: 0 0 14px rgba(84,160,255,0.4);
+        }
+
+        .qq-link-btn{
+            display:inline-block;
+            padding:12px 28px;
+            background-color:#54a0ff;
+            color:#ffffff;
+            text-decoration:none;
+            border-radius:8px;
+            transition: transform 0.25s ease;
+        }
+
+        .qq-link-btn:hover{
+            transform: translateY(-6px);
+        }
+
+        .hot-tip {
+            background-color: rgba(255, 150, 0, 0.15);
+            border: 1px solid rgba(255,150,0,0.3);
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .hot-tip p {
+            color: #ffc873;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .server-item{
+            margin-bottom:24px;
+            padding-bottom:16px;
+            border-bottom:1px solid #2a2a2a;
+        }
+        .server-item:last-child{
+            border-bottom:none;
+            margin-bottom:0;
+            padding-bottom:0;
+        }
+        .server-desc{
+            color:#aaa;
+            font-size:14px;
+            margin-top:4px;
+        }
+        .warn-text{
+            color:#ff6b6b;
+            margin-top:6px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #777777;
+            font-size: 14px;
+        }
+
+        .extra-footer{
+            margin-top:20px;
+            text-align:center;
+            font-size:13px;
+            color:#888888;
+            line-height:1.8;
+        }
+
+        .dot-online{
+            color:#28c740;
+        }
+        .dot-offline{
+            color:#e53935;
+        }
+        #refreshStatusBtn{
+            padding:10px 22px;
+            background:#3070d8;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+        #refreshStatusBtn:disabled{
+            background:#444444;
+            cursor:not-allowed;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding:30px 12px;
+            }
+            .lang-wrap{
+                top:8px;
+                right:8px;
+            }
+        }
+
+        /* 多语言控制 */
+        [data-lang="zh"]{ display:block; }
+        [data-lang="en"]{ display:none; }
+        html.lang-en [data-lang="zh"]{ display:none; }
+        html.lang-en [data-lang="en"]{ display:block; }
+    </style>
+</head>
+<body>
+    <div class="lang-wrap">
+        <button class="lang-btn" id="changeLangBtn">Change Language</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Tesseract</h1>
+            <div class="subtitle">
+                <span data-lang="zh">Minecraft 服务器</span>
+                <span data-lang="en">Minecraft Server</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>
+                <span data-lang="zh">服务器运行状态</span>
+                <span data-lang="en">Server Status</span>
+            </h2>
+
+            <div class="server-item">
+                <div id="mainServerStatus"></div>
+            </div>
+
+            <div class="server-item">
+                <div id="smallServerStatus"></div>
+            </div>
+
+            <div style="text-align:center;margin-top:12px;">
+                <button id="refreshStatusBtn">
+                    <span data-lang="zh">重新检测状态</span>
+                    <span data-lang="en">Refresh Status</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>
+                <span data-lang="zh">服务器介绍</span>
+                <span data-lang="en">About Server</span>
+            </h2>
+            <p data-lang="zh">欢迎来到 Tesseract Minecraft服务器！</p>
+            <p data-lang="en">Welcome to Tesseract Minecraft Server!</p>
+
+            <p data-lang="zh">这里是一个友好的Minecraft游戏社区，在这里你可以自由建造、生电研究，和小伙伴一同游玩。</p>
+            <p data-lang="en">This is a friendly Minecraft community. You can build freely, study redstone contraptions and play with friends.</p>
+
+            <p data-lang="zh">本服务器实行入群审核制度，想要进入服务器游玩，必须加入QQ审核群完成审核，审核通过后才可进入游戏。</p>
+            <p data-lang="en">This server requires QQ‑group verification. You must join the QQ group and pass review before joining.</p>
+
+            <div class="hot-tip">
+                <p data-lang="zh">🔥 热知识：服务器可以用矿透</p>
+                <p data-lang="en">🔥 Tip: X‑ray is allowed on the server</p>
+            </div>
+        </div>
+
+        <div class="card qq-group-box">
+            <h2>
+                <span data-lang="zh">如何加入服务器</span>
+                <span data-lang="en">How To Join</span>
+            </h2>
+            <p data-lang="zh">请加入我们的QQ审核群完成玩家审核</p>
+            <p data-lang="en">Join our QQ group for player verification</p>
+
+            <div class="qq-num">
+                <span data-lang="zh">QQ审核群群号：</span>
+                <span data-lang="en">QQ Group ID:</span>
+                421642410
+            </div>
+
+            <p data-lang="zh">加入群聊后，请阅读群公告完成审核流程，审核通过即可获取服务器相关信息。</p>
+            <p data-lang="en">Read group announcement after joining. You will get server information after verification.</p>
+
+            <a class="qq-link-btn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank">
+                <span data-lang="zh">戳我直达QQ群 ↗</span>
+                <span data-lang="en">Open QQ Group ↗</span>
+            </a>
+        </div>
+
+        <div class="card">
+            <h2>
+                <span data-lang="zh">玩家须知</span>
+                <span data-lang="en">Rules</span>
+            </h2>
+            <p data-lang="zh">❶ 入群后请遵守群规与服务器规则，禁止恶意破坏他人建筑。</p>
+            <p data-lang="en">❶ Follow group and server rules. Griefing other people's builds is forbidden.</p>
+
+            <p data-lang="zh">❷ 所有玩家必须经过审核，未审核账号无法连接服务器。</p>
+            <p data-lang="en">❷ All players need verification. Unverified accounts cannot connect.</p>
+
+            <p data-lang="zh">❸ 若无法加入群聊，请核对QQ群号码。</p>
+            <p data-lang="en">❸ If you cannot join group, double‑check group number.</p>
+        </div>
+
+        <div class="footer">
+            Tesseract Minecraft Server © 2026
+        </div>
+        <div class="extra-footer">
+            <div>Powered by Cloudflare Pages</div>
+            <div>
+                <span data-lang="zh">由zwx5817开发</span>
+                <span data-lang="en">Developed by zwx5817</span>
+            </div>
+        </div>
+    </div>
+
+<script>
+const mainServerEl = document.getElementById('mainServerStatus');
+const smallServerEl = document.getElementById('smallServerStatus');
+const refreshBtn = document.getElementById('refreshStatusBtn');
+const changeLangBtn = document.getElementById('changeLangBtn');
+
+const apiMain = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
+const apiSmall = "https://api.mcsrvstat.us/2/play.simpfun.cn:28381";
+
+// 缓存上一次接口返回的数据，切换语言直接复用渲染，不重新请求网络
+let cacheMainData = null;
+let cacheSmallData = null;
+
+const langText = {
+    zh:{
+        loading:"检测中...",
+        mainName:"主服务器",
+        smallName:"小服务器",
+        online:"在线",
+        offline:"离线",
+        bedrockTip:"兼容基岩版登录",
+        mainOfflineWarn:"服务器可能正在被攻击",
+        smallOfflineWarn:"可能是服主没开机（也有可能被打了）",
+        player:"在线玩家：{now}/{max} ｜ 版本：{ver}",
+        apiFail:"检测服务不可用"
+    },
+    en:{
+        loading:"Detecting...",
+        mainName:"Main Server",
+        smallName:"Small Server",
+        online:"Online",
+        offline:"Offline",
+        bedrockTip:"Bedrock Edition compatible",
+        mainOfflineWarn:"Server may be under attack",
+        smallOfflineWarn:"Possibly the host has not turned on the server (may also be attacked)",
+        player:"Players: {now}/{max} | Version: {ver}",
+        apiFail:"Status service unavailable"
+    }
+};
+
+function getBrowserLang(){
+    const navLang = navigator.language || navigator.userLanguage;
+    return navLang.startsWith('zh') ? 'zh' : 'en';
+}
+
+let currentLang = getBrowserLang();
+
+function setLang(lang){
+    currentLang = lang;
+    document.documentElement.classList.toggle('lang-en', lang === 'en');
+    //切换语言，不发网络请求，直接拿缓存数据重新渲染界面
+    renderStatus(cacheMainData, cacheSmallData);
+}
+
+changeLangBtn.onclick = ()=> {
+    setLang(currentLang === 'zh' ? 'en' : 'zh');
+};
+
+function getCurrentLang(){
+    return currentLang;
+}
+
+// 纯渲染函数，只操作DOM，不发起网络请求
+function renderStatus(mainData, smallData){
+    if(!mainServerEl || !smallServerEl) return;
+    const L = langText[getCurrentLang()];
+
+    if(!mainData){
+        mainServerEl.innerHTML = `
+            <div>${L.mainName}</div>
+            <div class="warn-text">${L.apiFail}</div>
+            <div class="server-desc">${L.bedrockTip}</div>
+        `;
+    }else if(mainData.online){
+        const ver = mainData.version || "Unknown";
+        mainServerEl.innerHTML = `
+            <div>${L.mainName}</div>
+            <div><span class="dot-online">●</span> ${L.online} — ${L.player.replace('{now}',mainData.players.online).replace('{max}',mainData.players.max).replace('{ver}',ver)}</div>
+            <div class="server-desc">${L.bedrockTip}</div>
+        `;
+    }else{
+        mainServerEl.innerHTML = `
+            <div>${L.mainName}</div>
+            <div><span class="dot-offline">●</span> ${L.offline}</div>
+            <div class="warn-text">${L.mainOfflineWarn}</div>
+            <div class="server-desc">${L.bedrockTip}</div>
+        `;
+    }
+
+    if(!smallData){
+        smallServerEl.innerHTML = `
+            <div>${L.smallName}</div>
+            <div class="warn-text">${L.apiFail}</div>
+            <div class="server-desc">${L.bedrockTip}</div>
+        `;
+    }else if(smallData.online){
+        const ver = smallData.version || "Unknown";
+        smallServerEl.innerHTML = `
+            <div>${L.smallName}</div>
+            <div><span class="dot-online">●</span> ${L.online} — ${L.player.replace('{now}',smallData.players.online).replace('{max}',smallData.players.max).replace('{ver}',ver)}</div>
+            <div class="server-desc">${L.bedrockTip}</div>
+        `;
+    }else{
+        smallServerEl.innerHTML = `
+            <div>${L.smallName}</div>
+            <div><span class="dot-offline">●</span> ${L.offline}</div>
+            <div class="warn-text">${L.smallOfflineWarn}</div>
+            <div class="server-desc">${L.bedrockTip}</div>
+        `;
+    }
+}
+
+async function fetchServer(apiUrl){
+    try{
+        // cache:'no‑store' 彻底禁用浏览器缓存，每次都真实请求网络
+        const res = await fetch(apiUrl, {cache:"no-store"});
+        return await res.json();
+    }catch(e){
+        return null;
+    }
+}
+
+//真正去网络拉取最新状态
+async function checkAllStatus(){
+    if(!mainServerEl || !smallServerEl || !refreshBtn) return;
+    const L = langText[getCurrentLang()];
+    refreshBtn.disabled = true;
+
+    mainServerEl.innerHTML = `<div>${L.mainName}</div><div>${L.loading}</div>`;
+    smallServerEl.innerHTML = `<div>${L.smallName}</div><div>${L.loading}</div>`;
+
+    const [mainData, smallData] = await Promise.all([
+        fetchServer(apiMain),
+        fetchServer(apiSmall)
+    ]);
+
+    //保存到内存缓存
+    cacheMainData = mainData;
+    cacheSmallData = smallData;
+
+    renderStatus(cacheMainData, cacheSmallData);
+    refreshBtn.disabled = false;
+}
+
+window.addEventListener('load', ()=>{
+    setLang(getBrowserLang());
+    requestAnimationFrame(()=>{
+        checkAllStatus();
+    });
+});
+
+refreshBtn.addEventListener('click', checkAllStatus);
+</script>
+</body>
+</html>
