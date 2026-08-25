@@ -5,45 +5,238 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tesseract - Minecraft Server</title>
     <style>
-        /* 样式与之前完全一致，略（保持完整） */
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html { scroll-behavior:smooth; }
-        body { background-color:#000; color:#eee; font-family:"Microsoft Yahei", system-ui, sans-serif; min-height:100vh; }
-        .lang-wrap{ position:fixed; top:16px; right:16px; z-index:99; }
-        .lang-btn{ padding:6px 12px; background:#222; color:#fff; border:1px solid #444; cursor:pointer; border-radius:6px; font-size:16px; }
-        .container { max-width:850px; margin:0 auto; padding:60px 16px 30px; }
-        .header { text-align:center; margin-bottom:40px; padding:50px 16px; background-color:#111; border-radius:16px; border:1px solid rgba(255,255,255,0.08); animation:fadeIn 0.6s ease-out; }
-        h1 { font-size:clamp(32px,8vw,52px); color:#4cd964; letter-spacing:4px; margin-bottom:12px; text-shadow:0 0 18px rgba(76,217,100,0.5); }
-        .subtitle { font-size:clamp(16px,3vw,20px); color:#aaa; }
-        .card { background-color:#111; border-radius:12px; padding:clamp(20px,4vw,32px); margin-bottom:22px; border:1px solid rgba(255,255,255,0.08); transition:transform 0.3s ease, box-shadow 0.3s ease; animation:fadeIn 0.6s ease-out; }
-        .card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.45); }
-        h2 { color:#73e086; margin-bottom:16px; font-size:clamp(20px,4vw,26px); }
-        p { line-height:1.8; font-size:clamp(15px,2.5vw,16px); color:#ddd; margin-bottom:12px; }
-        .qq-group-box { background-color:#1c1c1c; padding:clamp(20px,4vw,28px); border-radius:10px; text-align:center; }
-        .qq-num { font-size:clamp(22px,5vw,30px); color:#54a0ff; font-weight:bold; margin:14px 0; text-shadow:0 0 14px rgba(84,160,255,0.4); }
-        .qq-link-btn{ display:inline-block; padding:12px 28px; background-color:#54a0ff; color:#fff; text-decoration:none; border-radius:8px; transition:transform 0.25s ease; }
-        .qq-link-btn:hover{ transform:translateY(-6px); }
-        .hot-tip { background-color:rgba(255,150,0,0.15); border:1px solid rgba(255,150,0,0.3); padding:16px; border-radius:10px; margin-top:15px; }
-        .hot-tip p { color:#ffc873; font-weight:500; margin:0; }
-        .server-item{ margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #2a2a2a; }
-        .server-item:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
-        .server-head-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:6px; }
-        .server-info-line{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:15px; color:#ddd; }
-        .server-info-block{ display:flex; align-items:center; gap:10px; min-width:0; }
-        .features-row{ font-size:14px; color:#aaa; margin-top:4px; }
-        .server-warn-line{ margin-top:4px; font-size:14px; }
-        .warn-text{ color:#ff6b6b; }
-        .footer { text-align:center; margin-top:50px; color:#777; font-size:14px; }
-        .extra-footer{ margin-top:20px; text-align:center; font-size:13px; color:#888; line-height:1.8; }
-        .dot-online{ color:#28c740; }
-        .dot-offline{ color:#e53935; }
-        #refreshStatusBtn{ padding:10px 22px; background:#3070d8; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
-        #refreshStatusBtn:disabled{ background:#444; cursor:not-allowed; }
-        .retry-btn { padding:4px 12px; background:#d84a2a; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:13px; margin-left:10px; }
-        .retry-btn:hover { background:#b33a1a; }
-        .retry-btn:disabled { background:#555; cursor:not-allowed; }
-        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-        @media (max-width:480px) { .header { padding:30px 12px; } .lang-wrap{ top:8px; right:8px; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color: #000000;
+            color: #eeeeee;
+            font-family: "Microsoft Yahei", system-ui, sans-serif;
+            min-height: 100vh;
+        }
+        .lang-wrap{
+            position:fixed;
+            top:16px;
+            right:16px;
+            z-index:99;
+        }
+        .lang-btn{
+            padding:6px 12px;
+            background:#222;
+            color:#fff;
+            border:1px solid #444;
+            cursor:pointer;
+            border-radius:6px;
+            font-size:16px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 60px 16px 30px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 50px 16px;
+            background-color: #111111;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            animation: fadeIn 0.6s ease-out;
+        }
+        h1 {
+            font-size: clamp(32px,8vw,52px);
+            color: #4cd964;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            text-shadow: 0 0 18px rgba(76, 217, 100, 0.5);
+        }
+        .subtitle {
+            font-size: clamp(16px,3vw,20px);
+            color: #aaaaaa;
+        }
+        .card {
+            background-color: #111111;
+            border-radius: 12px;
+            padding: clamp(20px,4vw,32px);
+            margin-bottom: 22px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.6s ease-out;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+        }
+        h2 {
+            color: #73e086;
+            margin-bottom: 16px;
+            font-size: clamp(20px,4vw,26px);
+        }
+        p {
+            line-height: 1.8;
+            font-size: clamp(15px,2.5vw,16px);
+            color: #dddddd;
+            margin-bottom: 12px;
+        }
+        .qq-group-box {
+            background-color: #1c1c1c;
+            padding: clamp(20px,4vw,28px);
+            border-radius: 10px;
+            text-align: center;
+        }
+        .qq-num {
+            font-size: clamp(22px,5vw,30px);
+            color: #54a0ff;
+            font-weight: bold;
+            margin:14px 0;
+            text-shadow: 0 0 14px rgba(84,160,255,0.4);
+        }
+        .qq-link-btn{
+            display:inline-block;
+            padding:12px 28px;
+            background-color:#54a0ff;
+            color:#ffffff;
+            text-decoration:none;
+            border-radius:8px;
+            transition: transform 0.25s ease;
+        }
+        .qq-link-btn:hover{
+            transform: translateY(-6px);
+        }
+        .hot-tip {
+            background-color: rgba(255, 150, 0, 0.15);
+            border: 1px solid rgba(255,150,0,0.3);
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        .hot-tip p {
+            color: #ffc873;
+            font-weight: 500;
+            margin: 0;
+        }
+        .server-item{
+            margin-bottom:24px;
+            padding-bottom:16px;
+            border-bottom:1px solid #2a2a2a;
+        }
+        .server-item:last-child{
+            border-bottom:none;
+            margin-bottom:0;
+            padding-bottom:0;
+        }
+        .server-head-row{
+            display:flex;
+            align-items:center;
+            gap:12px;
+            flex-wrap:wrap;
+            margin-bottom:6px;
+        }
+        .server-info-line{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            flex-wrap:wrap;
+            font-size:15px;
+            color:#ddd;
+        }
+        .server-info-block{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            min-width:0;
+        }
+        .features-row{
+            font-size:14px;
+            color:#aaaaaa;
+            margin-top:4px;
+            display:flex;
+            flex-direction:column;
+            gap:2px;
+        }
+        .features-row span {
+            display:inline-block;
+        }
+        .server-warn-line{
+            margin-top:4px;
+            font-size:14px;
+        }
+        .warn-text{
+            color:#ff6b6b;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #777777;
+            font-size: 14px;
+        }
+        .extra-footer{
+            margin-top:20px;
+            text-align:center;
+            font-size:13px;
+            color:#888888;
+            line-height:1.8;
+        }
+        .dot-online{
+            color:#28c740;
+        }
+        .dot-offline{
+            color:#e53935;
+        }
+        #refreshStatusBtn{
+            padding:10px 22px;
+            background:#3070d8;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+        #refreshStatusBtn:disabled{
+            background:#444444;
+            cursor:not-allowed;
+        }
+        .retry-btn {
+            padding:4px 12px;
+            background:#d84a2a;
+            color:#fff;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:13px;
+            margin-left:10px;
+        }
+        .retry-btn:hover {
+            background:#b33a1a;
+        }
+        .retry-btn:disabled {
+            background:#555;
+            cursor:not-allowed;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @media (max-width: 480px) {
+            .header {
+                padding:30px 12px;
+            }
+            .lang-wrap{
+                top:8px;
+                right:8px;
+            }
+        }
         [data-lang="zh"]{ display:block; }
         [data-lang="en"]{ display:none; }
         html.lang-en [data-lang="zh"]{ display:none; }
@@ -59,8 +252,8 @@
         <div class="header">
             <h1>Tesseract</h1>
             <div class="subtitle">
-                <span data-lang="zh">Minecraft 服务器</span>
-                <span data-lang="en">Minecraft Server</span>
+                <span data-lang="zh">一个Minecraft 服务器</span>
+                <span data-lang="en">A Minecraft Server</span>
             </div>
         </div>
 
@@ -69,15 +262,12 @@
                 <span data-lang="zh">服务器运行状态</span>
                 <span data-lang="en">Server Status</span>
             </h2>
-
             <div class="server-item">
                 <div id="mainServerStatus"></div>
             </div>
-
             <div class="server-item">
                 <div id="smallServerStatus"></div>
             </div>
-
             <div style="text-align:center;margin-top:12px;">
                 <button id="refreshStatusBtn">
                     <span data-lang="zh">重新检测状态</span>
@@ -154,9 +344,8 @@ const smallServerEl = document.getElementById('smallServerStatus');
 const refreshBtn = document.getElementById('refreshStatusBtn');
 const changeLangBtn = document.getElementById('changeLangBtn');
 
-// 主服务器使用 mcsrvstat.us
+// API地址
 const apiMain = "https://api.mcstatus.io/v2/status/java/hmfree.tooo.top:20049";
-// 小服务器改回旧的 mcsrvstat.us
 const apiSmall = "https://api.mcstatus.io/v2/status/java/play.simpfun.cn:28381";
 
 let cacheMainData = null;
@@ -180,8 +369,12 @@ const langText = {
         smallOfflineWarn:"可能是服主没开机（也有可能被打了）",
         player:"在线玩家：{now}/{max}，版本：{ver}",
         apiFail:"检测服务不可用",
-        featureLabel:"特性：",
-        retry:"强制重新检测"
+        featureOffline:"离线支持",
+        featureBedrock:"基岩版支持",
+        featureCross:"跨版本支持",
+        supportYes:"支持",
+        supportNo:"不支持",
+        supportUnknown:"未知"
     },
     en:{
         loading:"Detecting...",
@@ -193,8 +386,12 @@ const langText = {
         smallOfflineWarn:"Possibly the host has not turned on the server (may also be attacked)",
         player:"Players: {now}/{max}, Version: {ver}",
         apiFail:"Status service unavailable",
-        featureLabel:"Features: ",
-        retry:"Force Retry"
+        featureOffline:"Offline Mode",
+        featureBedrock:"Bedrock Support",
+        featureCross:"Cross-version Support",
+        supportYes:"Supported",
+        supportNo:"Not Supported",
+        supportUnknown:"Unknown"
     }
 };
 
@@ -220,13 +417,39 @@ function getCurrentLang(){
     return currentLang;
 }
 
-function getFeatureText(data){
-    if (!data || !data.motd || !data.motd.clean) return '';
-    const lines = data.motd.clean.split('\n');
-    if (lines.length > 1) {
-        return lines[1].trim();
+/**
+ * 从 motd.clean 中解析三个特性
+ * 返回 { offline: bool|null, bedrock: bool|null, cross: bool|null }
+ * null 表示未知
+ */
+function parseFeatures(motdClean) {
+    if (!motdClean) {
+        return { offline: null, bedrock: null, cross: null };
     }
-    return '';
+    const text = motdClean.toLowerCase();
+    const offline = text.includes('离线') ? true : (text.includes('online') ? false : null);
+    const bedrock = text.includes('基岩版') ? (text.includes('不支持基岩版') || text.includes('不兼容基岩版') ? false : true) : null;
+    const cross = text.includes('跨版本') ? true : null;
+    // 如果包含 "支持离线" 则离线为 true；"不支持离线" 为 false
+    if (text.includes('支持离线')) {
+        return { offline: true, bedrock, cross };
+    }
+    if (text.includes('不支持离线')) {
+        return { offline: false, bedrock, cross };
+    }
+    // 如果明确提到 "兼容基岩版" 或 "支持基岩版"
+    if (text.includes('支持基岩版') || text.includes('兼容基岩版')) {
+        return { offline, bedrock: true, cross };
+    }
+    if (text.includes('不支持基岩版') || text.includes('不兼容基岩版')) {
+        return { offline, bedrock: false, cross };
+    }
+    return { offline, bedrock, cross };
+}
+
+function getFeatureText(data) {
+    if (!data || !data.motd || !data.motd.clean) return '';
+    return data.motd.clean;
 }
 
 function updateBottomButton() {
@@ -274,7 +497,16 @@ function updateSingleServer(el, data, type, showRetry = false) {
 
     if (data.online) {
         const ver = data.version || "Unknown";
-        const feature = getFeatureText(data);
+        const fullMotd = getFeatureText(data);
+        const features = parseFeatures(fullMotd);
+        // 构建特性显示
+        const featureLines = [];
+        const yes = L.supportYes, no = L.supportNo, unknown = L.supportUnknown;
+        const statusMap = (val) => val === true ? yes : (val === false ? no : unknown);
+        featureLines.push(`${L.featureOffline}：${statusMap(features.offline)}`);
+        featureLines.push(`${L.featureBedrock}：${statusMap(features.bedrock)}`);
+        featureLines.push(`${L.featureCross}：${statusMap(features.cross)}`);
+
         el.innerHTML = `
             <div class="server-head-row">
                 <div>${name}</div>
@@ -287,7 +519,9 @@ function updateSingleServer(el, data, type, showRetry = false) {
                     <span>${L.player.replace('{now}',data.players.online).replace('{max}',data.players.max).replace('{ver}',ver)}</span>
                 </div>
             </div>
-            ${feature ? `<div class="features-row">${L.featureLabel}${feature}</div>` : ''}
+            <div class="features-row">
+                ${featureLines.map(line => `<span>${line}</span>`).join('')}
+            </div>
         `;
     } else {
         el.innerHTML = `
