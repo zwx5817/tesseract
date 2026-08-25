@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tesseract - Minecraft Server</title>
+    <!-- 浏览器标签图标（favicon）使用本地 tudou.png -->
+    <link rel="icon" href="tudou.png" type="image/png">
     <style>
         * {
             margin: 0;
@@ -218,6 +220,13 @@
             background:#555;
             cursor:not-allowed;
         }
+        .potato-icon {
+            width: 26px;
+            height: 26px;
+            image-rendering: pixelated;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -252,8 +261,8 @@
         <div class="header">
             <h1>Tesseract</h1>
             <div class="subtitle">
-                <span data-lang="zh">一个Minecraft 服务器</span>
-                <span data-lang="en">A Minecraft Server</span>
+                <span data-lang="zh">Minecraft 服务器</span>
+                <span data-lang="en">Minecraft Server</span>
             </div>
         </div>
 
@@ -344,9 +353,8 @@ const smallServerEl = document.getElementById('smallServerStatus');
 const refreshBtn = document.getElementById('refreshStatusBtn');
 const changeLangBtn = document.getElementById('changeLangBtn');
 
-// API地址
-const apiMain = "https://api.mcstatus.io/v2/status/java/hmfree.tooo.top:20049";
-const apiSmall = "https://api.mcstatus.io/v2/status/java/play.simpfun.cn:28381";
+const apiMain = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
+const apiSmall = "https://api.mcsrvstat.us/2/play.simpfun.cn:28381";
 
 let cacheMainData = null;
 let cacheSmallData = null;
@@ -358,11 +366,14 @@ let smallController = null;
 let mainTimer = null;
 let smallTimer = null;
 
+// 服务器名称旁边的图标，使用本地 tudou.png
+const POTATO_ICON = `<img src="tudou.png" alt="毒马铃薯" class="potato-icon">`;
+
 const langText = {
     zh:{
         loading:"检测中...",
-        mainName:"主服务器",
-        smallName:"小服务器",
+        mainName:"大土豆",
+        smallName:"小土豆",
         online:"在线",
         offline:"离线",
         mainOfflineWarn:"服务器可能正在被攻击",
@@ -374,7 +385,8 @@ const langText = {
         featureCross:"跨版本支持",
         supportYes:"支持",
         supportNo:"不支持",
-        supportUnknown:"未知"
+        supportUnknown:"未知",
+        retry:"强制重新检测"
     },
     en:{
         loading:"Detecting...",
@@ -391,7 +403,8 @@ const langText = {
         featureCross:"Cross-version Support",
         supportYes:"Supported",
         supportNo:"Not Supported",
-        supportUnknown:"Unknown"
+        supportUnknown:"Unknown",
+        retry:"Force Retry"
     }
 };
 
@@ -417,11 +430,6 @@ function getCurrentLang(){
     return currentLang;
 }
 
-/**
- * 从 motd.clean 中解析三个特性
- * 返回 { offline: bool|null, bedrock: bool|null, cross: bool|null }
- * null 表示未知
- */
 function parseFeatures(motdClean) {
     if (!motdClean) {
         return { offline: null, bedrock: null, cross: null };
@@ -430,14 +438,12 @@ function parseFeatures(motdClean) {
     const offline = text.includes('离线') ? true : (text.includes('online') ? false : null);
     const bedrock = text.includes('基岩版') ? (text.includes('不支持基岩版') || text.includes('不兼容基岩版') ? false : true) : null;
     const cross = text.includes('跨版本') ? true : null;
-    // 如果包含 "支持离线" 则离线为 true；"不支持离线" 为 false
     if (text.includes('支持离线')) {
         return { offline: true, bedrock, cross };
     }
     if (text.includes('不支持离线')) {
         return { offline: false, bedrock, cross };
     }
-    // 如果明确提到 "兼容基岩版" 或 "支持基岩版"
     if (text.includes('支持基岩版') || text.includes('兼容基岩版')) {
         return { offline, bedrock: true, cross };
     }
@@ -459,14 +465,14 @@ function updateBottomButton() {
 function updateSingleServer(el, data, type, showRetry = false) {
     if (!el) return;
     const L = langText[getCurrentLang()];
-    const name = type === 'main' ? L.mainName : L.smallName;
+    const nameWithIcon = `${POTATO_ICON} ${type === 'main' ? L.mainName : L.smallName}`;
     const offlineWarn = type === 'main' ? L.mainOfflineWarn : L.smallOfflineWarn;
 
     const isLoading = (type === 'main') ? mainLoading : smallLoading;
     if (isLoading) {
         el.innerHTML = `
             <div class="server-head-row">
-                <div>${name}</div>
+                <div>${nameWithIcon}</div>
                 ${showRetry ? `<button class="retry-btn" data-type="${type}">${L.retry}</button>` : ''}
             </div>
             <div class="server-info-line">
@@ -488,7 +494,7 @@ function updateSingleServer(el, data, type, showRetry = false) {
     if (data === null) {
         el.innerHTML = `
             <div class="server-head-row">
-                <div>${name}</div>
+                <div>${nameWithIcon}</div>
             </div>
             <div class="server-info-line"><span class="warn-text">${L.apiFail}</span></div>
         `;
@@ -499,7 +505,6 @@ function updateSingleServer(el, data, type, showRetry = false) {
         const ver = data.version || "Unknown";
         const fullMotd = getFeatureText(data);
         const features = parseFeatures(fullMotd);
-        // 构建特性显示
         const featureLines = [];
         const yes = L.supportYes, no = L.supportNo, unknown = L.supportUnknown;
         const statusMap = (val) => val === true ? yes : (val === false ? no : unknown);
@@ -509,7 +514,7 @@ function updateSingleServer(el, data, type, showRetry = false) {
 
         el.innerHTML = `
             <div class="server-head-row">
-                <div>${name}</div>
+                <div>${nameWithIcon}</div>
             </div>
             <div class="server-info-line">
                 <div class="server-info-block">
@@ -526,7 +531,7 @@ function updateSingleServer(el, data, type, showRetry = false) {
     } else {
         el.innerHTML = `
             <div class="server-head-row">
-                <div>${name}</div>
+                <div>${nameWithIcon}</div>
             </div>
             <div class="server-info-line">
                 <div class="server-info-block">
