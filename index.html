@@ -34,6 +34,11 @@ body{
   padding:20px;
   margin-bottom:16px;
   border:1px solid #3f3f46;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.card:hover{
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
 }
 .server-row{
   margin-bottom:14px;
@@ -269,8 +274,8 @@ const i18n = {
       "加入服务器需要通过QQ审核群审核"
     ],
     qqText:"戳我直达QQ审核群 ↗",
-    mainServerTitle:"主服",
-    smallServerTitle:"小服",
+    mainServerTitle:"主服 hmfree.tooo.top:20049",
+    smallServerTitle:"小服 play.simpfun.cn:28381",
     checking:"检测中...",
     online:"在线",
     offline:"离线",
@@ -349,7 +354,6 @@ function applyLang(){
   document.getElementById("modalTitle").innerText = t.modalTitle;
   document.getElementById("playerSearch").placeholder = t.searchPlaceholder;
 
-  // 渲染规则列表
   const ruleWrap = document.getElementById("ruleContent");
   ruleWrap.innerHTML = "";
   t.ruleContent.forEach(txt=>{
