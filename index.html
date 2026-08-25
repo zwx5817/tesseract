@@ -5,257 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tesseract - Minecraft Server</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background-color: #000000;
-            color: #eeeeee;
-            font-family: "Microsoft Yahei", system-ui, sans-serif;
-            min-height: 100vh;
-        }
-
-        .lang-wrap{
-            position:fixed;
-            top:16px;
-            right:16px;
-            z-index:99;
-        }
-        .lang-btn{
-            padding:6px 12px;
-            background:#222;
-            color:#fff;
-            border:1px solid #444;
-            cursor:pointer;
-            border-radius:6px;
-            font-size:16px;
-        }
-
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 60px 16px 30px;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 50px 16px;
-            background-color: #111111;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        h1 {
-            font-size: clamp(32px,8vw,52px);
-            color: #4cd964;
-            letter-spacing: 4px;
-            margin-bottom: 12px;
-            text-shadow: 0 0 18px rgba(76, 217, 100, 0.5);
-        }
-
-        .subtitle {
-            font-size: clamp(16px,3vw,20px);
-            color: #aaaaaa;
-        }
-
-        .card {
-            background-color: #111111;
-            border-radius: 12px;
-            padding: clamp(20px,4vw,32px);
-            margin-bottom: 22px;
-            border: 1px solid rgba(255,255,255,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            animation: fadeIn 0.6s ease-out;
-        }
-
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-        }
-
-        h2 {
-            color: #73e086;
-            margin-bottom: 16px;
-            font-size: clamp(20px,4vw,26px);
-        }
-
-        p {
-            line-height: 1.8;
-            font-size: clamp(15px,2.5vw,16px);
-            color: #dddddd;
-            margin-bottom: 12px;
-        }
-
-        .qq-group-box {
-            background-color: #1c1c1c;
-            padding: clamp(20px,4vw,28px);
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .qq-num {
-            font-size: clamp(22px,5vw,30px);
-            color: #54a0ff;
-            font-weight: bold;
-            margin:14px 0;
-            text-shadow: 0 0 14px rgba(84,160,255,0.4);
-        }
-
-        .qq-link-btn{
-            display:inline-block;
-            padding:12px 28px;
-            background-color:#54a0ff;
-            color:#ffffff;
-            text-decoration:none;
-            border-radius:8px;
-            transition: transform 0.25s ease;
-        }
-
-        .qq-link-btn:hover{
-            transform: translateY(-6px);
-        }
-
-        .hot-tip {
-            background-color: rgba(255, 150, 0, 0.15);
-            border: 1px solid rgba(255,150,0,0.3);
-            padding: 16px;
-            border-radius: 10px;
-            margin-top: 15px;
-        }
-
-        .hot-tip p {
-            color: #ffc873;
-            font-weight: 500;
-            margin: 0;
-        }
-
-        .server-item{
-            margin-bottom:24px;
-            padding-bottom:16px;
-            border-bottom:1px solid #2a2a2a;
-        }
-        .server-item:last-child{
-            border-bottom:none;
-            margin-bottom:0;
-            padding-bottom:0;
-        }
-        .server-head-row{
-            display:flex;
-            align-items:center;
-            gap:12px;
-            flex-wrap:wrap;
-            margin-bottom:6px;
-        }
-        .server-info-line{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            flex-wrap:wrap;
-            font-size:15px;
-            color:#ddd;
-        }
-        .server-info-block{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            min-width:0;
-        }
-        .features-row{
-            font-size:14px;
-            color:#aaaaaa;
-            margin-top:4px;
-        }
-        .server-warn-line{
-            margin-top:4px;
-            font-size:14px;
-        }
-
-        .warn-text{
-            color:#ff6b6b;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            color: #777777;
-            font-size: 14px;
-        }
-
-        .extra-footer{
-            margin-top:20px;
-            text-align:center;
-            font-size:13px;
-            color:#888888;
-            line-height:1.8;
-        }
-
-        .dot-online{
-            color:#28c740;
-        }
-        .dot-offline{
-            color:#e53935;
-        }
-        #refreshStatusBtn{
-            padding:10px 22px;
-            background:#3070d8;
-            color:white;
-            border:none;
-            border-radius:8px;
-            cursor:pointer;
-            font-size:16px;
-        }
-        #refreshStatusBtn:disabled{
-            background:#444444;
-            cursor:not-allowed;
-        }
-        .retry-btn {
-            padding:4px 12px;
-            background:#d84a2a;
-            color:#fff;
-            border:none;
-            border-radius:4px;
-            cursor:pointer;
-            font-size:13px;
-            margin-left:10px;
-        }
-        .retry-btn:hover {
-            background:#b33a1a;
-        }
-        .retry-btn:disabled {
-            background:#555;
-            cursor:not-allowed;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                padding:30px 12px;
-            }
-            .lang-wrap{
-                top:8px;
-                right:8px;
-            }
-        }
-
+        /* 样式与之前完全一致，略（保持完整） */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { background-color:#000; color:#eee; font-family:"Microsoft Yahei", system-ui, sans-serif; min-height:100vh; }
+        .lang-wrap{ position:fixed; top:16px; right:16px; z-index:99; }
+        .lang-btn{ padding:6px 12px; background:#222; color:#fff; border:1px solid #444; cursor:pointer; border-radius:6px; font-size:16px; }
+        .container { max-width:850px; margin:0 auto; padding:60px 16px 30px; }
+        .header { text-align:center; margin-bottom:40px; padding:50px 16px; background-color:#111; border-radius:16px; border:1px solid rgba(255,255,255,0.08); animation:fadeIn 0.6s ease-out; }
+        h1 { font-size:clamp(32px,8vw,52px); color:#4cd964; letter-spacing:4px; margin-bottom:12px; text-shadow:0 0 18px rgba(76,217,100,0.5); }
+        .subtitle { font-size:clamp(16px,3vw,20px); color:#aaa; }
+        .card { background-color:#111; border-radius:12px; padding:clamp(20px,4vw,32px); margin-bottom:22px; border:1px solid rgba(255,255,255,0.08); transition:transform 0.3s ease, box-shadow 0.3s ease; animation:fadeIn 0.6s ease-out; }
+        .card:hover { transform:translateY(-4px); box-shadow:0 8px 24px rgba(0,0,0,0.45); }
+        h2 { color:#73e086; margin-bottom:16px; font-size:clamp(20px,4vw,26px); }
+        p { line-height:1.8; font-size:clamp(15px,2.5vw,16px); color:#ddd; margin-bottom:12px; }
+        .qq-group-box { background-color:#1c1c1c; padding:clamp(20px,4vw,28px); border-radius:10px; text-align:center; }
+        .qq-num { font-size:clamp(22px,5vw,30px); color:#54a0ff; font-weight:bold; margin:14px 0; text-shadow:0 0 14px rgba(84,160,255,0.4); }
+        .qq-link-btn{ display:inline-block; padding:12px 28px; background-color:#54a0ff; color:#fff; text-decoration:none; border-radius:8px; transition:transform 0.25s ease; }
+        .qq-link-btn:hover{ transform:translateY(-6px); }
+        .hot-tip { background-color:rgba(255,150,0,0.15); border:1px solid rgba(255,150,0,0.3); padding:16px; border-radius:10px; margin-top:15px; }
+        .hot-tip p { color:#ffc873; font-weight:500; margin:0; }
+        .server-item{ margin-bottom:24px; padding-bottom:16px; border-bottom:1px solid #2a2a2a; }
+        .server-item:last-child{ border-bottom:none; margin-bottom:0; padding-bottom:0; }
+        .server-head-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:6px; }
+        .server-info-line{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:15px; color:#ddd; }
+        .server-info-block{ display:flex; align-items:center; gap:10px; min-width:0; }
+        .features-row{ font-size:14px; color:#aaa; margin-top:4px; }
+        .server-warn-line{ margin-top:4px; font-size:14px; }
+        .warn-text{ color:#ff6b6b; }
+        .footer { text-align:center; margin-top:50px; color:#777; font-size:14px; }
+        .extra-footer{ margin-top:20px; text-align:center; font-size:13px; color:#888; line-height:1.8; }
+        .dot-online{ color:#28c740; }
+        .dot-offline{ color:#e53935; }
+        #refreshStatusBtn{ padding:10px 22px; background:#3070d8; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
+        #refreshStatusBtn:disabled{ background:#444; cursor:not-allowed; }
+        .retry-btn { padding:4px 12px; background:#d84a2a; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:13px; margin-left:10px; }
+        .retry-btn:hover { background:#b33a1a; }
+        .retry-btn:disabled { background:#555; cursor:not-allowed; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @media (max-width:480px) { .header { padding:30px 12px; } .lang-wrap{ top:8px; right:8px; } }
         [data-lang="zh"]{ display:block; }
         [data-lang="en"]{ display:none; }
         html.lang-en [data-lang="zh"]{ display:none; }
@@ -305,13 +93,10 @@
             </h2>
             <p data-lang="zh">欢迎来到 Tesseract Minecraft服务器！</p>
             <p data-lang="en">Welcome to Tesseract Minecraft Server!</p>
-
             <p data-lang="zh">这里是一个友好的Minecraft游戏社区，在这里你可以自由建造、生电研究，和小伙伴一同游玩。</p>
             <p data-lang="en">This is a friendly Minecraft community. You can build freely, study redstone contraptions and play with friends.</p>
-
             <p data-lang="zh">本服务器实行入群审核制度，想要进入服务器游玩，必须加入QQ审核群完成审核，审核通过后才可进入游戏。</p>
             <p data-lang="en">This server requires QQ‑group verification. You must join the QQ group and pass review before joining.</p>
-
             <div class="hot-tip">
                 <p data-lang="zh">🔥 热知识：服务器可以用矿透</p>
                 <p data-lang="en">🔥 Tip: X‑ray is allowed on the server</p>
@@ -325,16 +110,13 @@
             </h2>
             <p data-lang="zh">请加入我们的QQ审核群完成玩家审核</p>
             <p data-lang="en">Join our QQ group for player verification</p>
-
             <div class="qq-num">
                 <span data-lang="zh">QQ审核群群号：</span>
                 <span data-lang="en">QQ Group ID:</span>
                 421642410
             </div>
-
             <p data-lang="zh">加入群聊后，请阅读群公告完成审核流程，审核通过即可获取服务器相关信息。</p>
             <p data-lang="en">Read group announcement after joining. You will get server information after verification.</p>
-
             <a class="qq-link-btn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank">
                 <span data-lang="zh">戳我直达QQ群 ↗</span>
                 <span data-lang="en">Open QQ Group ↗</span>
@@ -348,10 +130,8 @@
             </h2>
             <p data-lang="zh">❶ 入群后请遵守群规与服务器规则，禁止恶意破坏他人建筑。</p>
             <p data-lang="en">❶ Follow group and server rules. Griefing other people's builds is forbidden.</p>
-
             <p data-lang="zh">❷ 所有玩家必须经过审核，未审核账号无法连接服务器。</p>
             <p data-lang="en">❷ All players need verification. Unverified accounts cannot connect.</p>
-
             <p data-lang="zh">❸ 若无法加入群聊，请核对QQ群号码。</p>
             <p data-lang="en">❸ If you cannot join group, double‑check group number.</p>
         </div>
@@ -374,13 +154,14 @@ const smallServerEl = document.getElementById('smallServerStatus');
 const refreshBtn = document.getElementById('refreshStatusBtn');
 const changeLangBtn = document.getElementById('changeLangBtn');
 
-const apiMain = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
-const apiSmall = "https://api.mcsrvstat.us/2/play.simpfun.cn:28381";
+// 主服务器使用 mcsrvstat.us
+const apiMain = "https://api.mcstatus.io/v2/status/java/hmfree.tooo.top:20049";
+// 小服务器改回旧的 mcsrvstat.us
+const apiSmall = "https://api.mcstatus.io/v2/status/java/play.simpfun.cn:28381";
 
 let cacheMainData = null;
 let cacheSmallData = null;
 
-// 每个服务器的加载状态和控制器
 let mainLoading = false;
 let smallLoading = false;
 let mainController = null;
@@ -427,7 +208,6 @@ let currentLang = getBrowserLang();
 function setLang(lang){
     currentLang = lang;
     document.documentElement.classList.toggle('lang-en', lang === 'en');
-    // 重新渲染已有数据（仅显示状态，不显示按钮）
     if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main', false);
     if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small', false);
 }
@@ -440,7 +220,6 @@ function getCurrentLang(){
     return currentLang;
 }
 
-// 从 motd.clean 中提取特性描述（第二行）
 function getFeatureText(data){
     if (!data || !data.motd || !data.motd.clean) return '';
     const lines = data.motd.clean.split('\n');
@@ -450,19 +229,16 @@ function getFeatureText(data){
     return '';
 }
 
-// 更新底部按钮状态
 function updateBottomButton() {
     refreshBtn.disabled = mainLoading || smallLoading;
 }
 
-// 更新单个服务器状态显示，showRetry 控制是否显示“强制重新检测”按钮（仅在加载超时时为 true）
 function updateSingleServer(el, data, type, showRetry = false) {
     if (!el) return;
     const L = langText[getCurrentLang()];
     const name = type === 'main' ? L.mainName : L.smallName;
     const offlineWarn = type === 'main' ? L.mainOfflineWarn : L.smallOfflineWarn;
 
-    // 如果正在加载，根据 showRetry 决定是否显示按钮
     const isLoading = (type === 'main') ? mainLoading : smallLoading;
     if (isLoading) {
         el.innerHTML = `
@@ -486,7 +262,6 @@ function updateSingleServer(el, data, type, showRetry = false) {
         return;
     }
 
-    // 加载完成（有数据或 null），不显示按钮
     if (data === null) {
         el.innerHTML = `
             <div class="server-head-row">
@@ -530,7 +305,6 @@ function updateSingleServer(el, data, type, showRetry = false) {
     }
 }
 
-// 带超时和可取消的fetch
 async function fetchServer(apiUrl, controller, timeout = 60000) {
     const timer = setTimeout(() => controller.abort(), timeout);
     try {
@@ -546,7 +320,6 @@ async function fetchServer(apiUrl, controller, timeout = 60000) {
     }
 }
 
-// 单独检测某个服务器
 async function fetchSingleServer(type) {
     const isMain = type === 'main';
     const el = isMain ? mainServerEl : smallServerEl;
@@ -554,7 +327,7 @@ async function fetchSingleServer(type) {
     const setLoading = (val) => {
         if (isMain) mainLoading = val;
         else smallLoading = val;
-        updateBottomButton(); // 更新底部按钮状态
+        updateBottomButton();
     };
     const setData = (val) => {
         if (isMain) cacheMainData = val;
@@ -571,27 +344,21 @@ async function fetchSingleServer(type) {
         else smallTimer = t;
     };
 
-    // 取消旧请求
     const oldCtrl = getController();
     if (oldCtrl) {
         try { oldCtrl.abort(); } catch(e) {}
     }
-    // 清除旧定时器
     const oldTimer = getTimer();
     if (oldTimer) {
         clearTimeout(oldTimer);
         setTimer(null);
     }
 
-    // 创建新控制器
     const controller = new AbortController();
     setController(controller);
     setLoading(true);
-
-    // 先显示加载状态，不显示按钮
     updateSingleServer(el, null, type, false);
 
-    // 设置30秒定时器，显示按钮（如果仍在加载）
     const timer = setTimeout(() => {
         if (isMain ? mainLoading : smallLoading) {
             updateSingleServer(el, null, type, true);
@@ -600,7 +367,7 @@ async function fetchSingleServer(type) {
     setTimer(timer);
 
     const data = await fetchServer(apiUrl, controller);
-    // 清除定时器
+
     const curTimer = getTimer();
     if (curTimer) {
         clearTimeout(curTimer);
@@ -608,22 +375,17 @@ async function fetchSingleServer(type) {
     }
     setLoading(false);
     setData(data);
-    // 清空控制器
     if (getController() === controller) {
         setController(null);
     }
-    // 显示结果（不显示按钮）
     updateSingleServer(el, data, type, false);
 }
 
-// 同时检测两个服务器
 async function checkAllStatus(){
-    // 重置加载状态并禁用底部按钮
     mainLoading = false;
     smallLoading = false;
     refreshBtn.disabled = true;
 
-    // 取消所有旧请求
     if (mainController) {
         try { mainController.abort(); } catch(e) {}
         mainController = null;
@@ -635,7 +397,6 @@ async function checkAllStatus(){
     if (mainTimer) { clearTimeout(mainTimer); mainTimer = null; }
     if (smallTimer) { clearTimeout(smallTimer); smallTimer = null; }
 
-    // 发起两个独立检测
     fetchSingleServer('main');
     fetchSingleServer('small');
 }
