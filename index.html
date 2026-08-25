@@ -40,6 +40,9 @@ body{
   transform: translateY(-4px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.35);
 }
+.card-center{
+  text-align:center;
+}
 .server-row{
   margin-bottom:14px;
 }
@@ -73,7 +76,6 @@ body{
   color:#a1a1aa;
   font-size:14px;
 }
-/* Modal */
 .modal-mask{
   position:fixed;
   inset:0;
@@ -166,7 +168,6 @@ body{
   opacity:0.4;
   cursor:not-allowed;
 }
-.hidden{display:none;}
 .qq-link{
   display:inline-block;
   margin:10px 0;
@@ -188,7 +189,7 @@ body{
 }
 .hot-tip{
   color:#facc15;
-  margin:8px 0;
+  font-size:16px;
 }
 </style>
 </head>
@@ -198,11 +199,12 @@ body{
     <button class="lang-btn" id="toggleLang">Switch to English</button>
   </div>
 
-  <h1 id="title">Tesseract MC服务器</h1>
-  <p id="intro" style="margin:8px 0 12px;">欢迎来到Tesseract服务器，请加入QQ审核群进入服务器</p>
-  <div class="hot-tip" id="hotTip">热知识：服务器可以用矿透</div>
-
-  <a class="qq-link" id="qqBtn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank">戳我直达QQ审核群 ↗</a>
+  <!-- 标题独立卡片，全部居中 -->
+  <div class="card card-center">
+    <h1 id="title">Tesseract MC服务器</h1>
+    <p id="intro" style="margin:8px 0 12px;">欢迎来到Tesseract服务器，请加入QQ审核群进入服务器</p>
+    <a class="qq-link" id="qqBtn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank">戳我直达QQ审核群 ↗</a>
+  </div>
 
   <div class="card">
     <h3 class="rule-title" id="ruleHead">📜 服务器规则</h3>
@@ -214,8 +216,13 @@ body{
     </ul>
   </div>
 
+  <!-- 热知识独立卡片，火焰emoji 🔥 -->
   <div class="card">
-    <h3 id="mainServerTitle">主服 hmfree.tooo.top:20049</h3>
+    <div class="hot-tip" id="hotTip">🔥 热知识：服务器可以用矿透</div>
+  </div>
+
+  <div class="card">
+    <h3 id="mainServerTitle">主服</h3>
     <div class="server-row">
       <span class="status-dot dot-gray" id="mainDot"></span>
       <span id="mainStatusText">检测中...</span>
@@ -226,7 +233,7 @@ body{
   </div>
 
   <div class="card">
-    <h3 id="smallServerTitle">小服 play.simpfun.cn:28381</h3>
+    <h3 id="smallServerTitle">小服</h3>
     <div class="server-row">
       <span class="status-dot dot-gray" id="smallDot"></span>
       <span id="smallStatusText">检测中...</span>
@@ -265,7 +272,7 @@ const i18n = {
   zh:{
     title:"Tesseract MC服务器",
     intro:"欢迎来到Tesseract服务器，请加入QQ审核群进入服务器",
-    hotTip:"热知识：服务器可以用矿透",
+    hotTip:"🔥 热知识：服务器可以用矿透",
     ruleHead:"📜 服务器规则",
     ruleContent:[
       "禁止恶意破坏他人建筑、生电机器",
@@ -274,8 +281,8 @@ const i18n = {
       "加入服务器需要通过QQ审核群审核"
     ],
     qqText:"戳我直达QQ审核群 ↗",
-    mainServerTitle:"主服 hmfree.tooo.top:20049",
-    smallServerTitle:"小服 play.simpfun.cn:28381",
+    mainServerTitle:"主服",
+    smallServerTitle:"小服",
     checking:"检测中...",
     online:"在线",
     offline:"离线",
@@ -298,7 +305,7 @@ const i18n = {
   en:{
     title:"Tesseract MC Server",
     intro:"Welcome to Tesseract, join QQ review group to access server",
-    hotTip:"Fun fact: X‑ray mods are allowed on server",
+    hotTip:"🔥 Fun fact: X‑ray mods are allowed on server",
     ruleHead:"📜 Server Rules",
     ruleContent:[
       "Do not grief other players' builds or technical machines",
@@ -307,8 +314,8 @@ const i18n = {
       "QQ group review is required before joining"
     ],
     qqText:"Jump to QQ review group ↗",
-    mainServerTitle:"Main Server hmfree.tooo.top:20049",
-    smallServerTitle:"Secondary Server play.simpfun.cn:28381",
+    mainServerTitle:"Main Server",
+    smallServerTitle:"Secondary Server",
     checking:"Checking...",
     online:"Online",
     offline:"Offline",
@@ -361,7 +368,6 @@ function applyLang(){
     li.innerText = txt;
     ruleWrap.appendChild(li);
   });
-
   renderServerUi();
 }
 
