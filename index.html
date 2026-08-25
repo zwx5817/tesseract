@@ -173,6 +173,18 @@ body{
   transition:transform 0.2s ease;
 }
 .qq-link:hover{transform:translateY(-4px);}
+.rule-title{
+  font-size:18px;
+  margin:12px 0 8px;
+}
+.rule-list{
+  padding-left:1.2rem;
+  line-height:1.7;
+}
+.hot-tip{
+  color:#facc15;
+  margin:8px 0;
+}
 </style>
 </head>
 <body>
@@ -182,9 +194,20 @@ body{
   </div>
 
   <h1 id="title">Tesseract MC服务器</h1>
-  <p id="intro" style="margin:8px 0 24px;">欢迎来到Tesseract服务器，请加入QQ审核群进入服务器</p>
+  <p id="intro" style="margin:8px 0 12px;">欢迎来到Tesseract服务器，请加入QQ审核群进入服务器</p>
+  <div class="hot-tip" id="hotTip">热知识：服务器可以用矿透</div>
 
   <a class="qq-link" id="qqBtn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank">戳我直达QQ审核群 ↗</a>
+
+  <div class="card">
+    <h3 class="rule-title" id="ruleHead">📜 服务器规则</h3>
+    <ul class="rule-list" id="ruleContent">
+      <li>禁止恶意破坏他人建筑、生电机器</li>
+      <li>禁止恶意卡服、压测服务器</li>
+      <li>禁止恶意骚扰其他玩家</li>
+      <li>加入服务器需要通过QQ审核群审核</li>
+    </ul>
+  </div>
 
   <div class="card">
     <h3 id="mainServerTitle">主服 hmfree.tooo.top:20049</h3>
@@ -237,9 +260,17 @@ const i18n = {
   zh:{
     title:"Tesseract MC服务器",
     intro:"欢迎来到Tesseract服务器，请加入QQ审核群进入服务器",
+    hotTip:"热知识：服务器可以用矿透",
+    ruleHead:"📜 服务器规则",
+    ruleContent:[
+      "禁止恶意破坏他人建筑、生电机器",
+      "禁止恶意卡服、压测服务器",
+      "禁止恶意骚扰其他玩家",
+      "加入服务器需要通过QQ审核群审核"
+    ],
     qqText:"戳我直达QQ审核群 ↗",
-    mainServerTitle:"主服 hmfree.tooo.top:20049",
-    smallServerTitle:"小服 play.simpfun.cn:28381",
+    mainServerTitle:"主服",
+    smallServerTitle:"小服",
     checking:"检测中...",
     online:"在线",
     offline:"离线",
@@ -256,11 +287,20 @@ const i18n = {
     next:"下一页",
     players:"玩家",
     version:"版本",
-    max:"最大"
+    max:"最大",
+    bedrockTip:"兼容基岩版登录"
   },
   en:{
     title:"Tesseract MC Server",
     intro:"Welcome to Tesseract, join QQ review group to access server",
+    hotTip:"Fun fact: X‑ray mods are allowed on server",
+    ruleHead:"📜 Server Rules",
+    ruleContent:[
+      "Do not grief other players' builds or technical machines",
+      "Do not lag‑bomb or stress‑test server",
+      "Do not harass other players",
+      "QQ group review is required before joining"
+    ],
     qqText:"Jump to QQ review group ↗",
     mainServerTitle:"Main Server hmfree.tooo.top:20049",
     smallServerTitle:"Secondary Server play.simpfun.cn:28381",
@@ -280,7 +320,8 @@ const i18n = {
     next:"Next",
     players:"players",
     version:"Version",
-    max:"Max"
+    max:"Max",
+    bedrockTip:"Bedrock Edition compatible"
   }
 };
 
@@ -296,13 +337,27 @@ function applyLang(){
   document.getElementById("toggleLang").innerText = currentLang==="zh"?"Switch to English":"切换中文";
   document.getElementById("title").innerText = t.title;
   document.getElementById("intro").innerText = t.intro;
+  document.getElementById("hotTip").innerText = t.hotTip;
+  document.getElementById("ruleHead").innerText = t.ruleHead;
   document.getElementById("qqBtn").innerText = t.qqText;
   document.getElementById("mainServerTitle").innerText = t.mainServerTitle;
   document.getElementById("smallServerTitle").innerText = t.smallServerTitle;
+  document.getElementById("mainBedrockTip").innerText = t.bedrockTip;
+  document.getElementById("smallBedrockTip").innerText = t.bedrockTip;
   document.getElementById("mainViewPlayerBtn").innerText = t.viewPlayer;
   document.getElementById("smallViewPlayerBtn").innerText = t.viewPlayer;
   document.getElementById("modalTitle").innerText = t.modalTitle;
   document.getElementById("playerSearch").placeholder = t.searchPlaceholder;
+
+  // 渲染规则列表
+  const ruleWrap = document.getElementById("ruleContent");
+  ruleWrap.innerHTML = "";
+  t.ruleContent.forEach(txt=>{
+    const li = document.createElement("li");
+    li.innerText = txt;
+    ruleWrap.appendChild(li);
+  });
+
   renderServerUi();
 }
 
@@ -313,7 +368,6 @@ document.getElementById("toggleLang").onclick = ()=>{
 
 function renderServerUi(){
   const t = i18n[currentLang];
-  // main
   const m = serverData.main;
   const mainDot = document.getElementById("mainDot");
   const mainStatusText = document.getElementById("mainStatusText");
@@ -334,7 +388,6 @@ function renderServerUi(){
     mainInfo.innerHTML = "";
   }
 
-  // small
   const s = serverData.small;
   const smallDot = document.getElementById("smallDot");
   const smallStatusText = document.getElementById("smallStatusText");
@@ -390,7 +443,6 @@ async function refreshAll(){
   renderServerUi();
 }
 
-// modal
 const modal = document.getElementById("playerModal");
 const modalClose = document.getElementById("modalClose");
 const playerListWrap = document.getElementById("playerListWrap");
