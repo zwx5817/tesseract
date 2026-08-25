@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tesseract - Minecraft Server</title>
     <link rel="icon" href="tudou.png" type="image/png">
+    <!-- 主题预设置，避免闪烁 -->
+    <script>
+        (function() {
+            const stored = localStorage.getItem('theme');
+            let theme = stored;
+            if (!theme) {
+                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            if (theme === 'light') {
+                document.documentElement.classList.add('light-mode');
+            }
+            window.__initialTheme = theme;
+        })();
+    </script>
     <style>
         /* ===== 全局变量 ===== */
         :root {
@@ -43,8 +57,7 @@
             --switch-dot: #fff;
             --switch-active: #4cd964;
         }
-
-        /* ===== 基础样式 ===== */
+        /* 基础样式 */
         * { margin:0; padding:0; box-sizing:border-box; }
         html { scroll-behavior:smooth; }
         body {
@@ -54,8 +67,7 @@
             min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
         }
-
-        /* ===== 右上角控制栏（液态玻璃） ===== */
+        /* 右上角控制栏 */
         .top-bar {
             position: fixed;
             top: 16px;
@@ -90,8 +102,7 @@
             border-color: rgba(255,255,255,0.3);
         }
         .glass-btn:active { transform: scale(0.97); }
-
-        /* ===== 主题切换开关（左右滑动） ===== */
+        /* 主题开关 */
         .theme-switch {
             display: flex;
             align-items: center;
@@ -131,20 +142,15 @@
             transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .theme-switch.light .switch-track {
-            background: var(--switch-active);
-        }
-        .theme-switch.light .switch-thumb {
-            left: 23px;
-        }
+        .theme-switch.light .switch-track { background: var(--switch-active); }
+        .theme-switch.light .switch-thumb { left: 23px; }
         .theme-switch .switch-label {
             font-size: 14px;
             color: var(--btn-text);
             text-shadow: var(--shadow-text);
             min-width: 32px;
         }
-
-        /* ===== 页面内容 ===== */
+        /* 页面内容 */
         .container {
             max-width: 850px;
             margin: 0 auto;
@@ -322,7 +328,6 @@
             .theme-switch .switch-thumb { width:14px; height:14px; top:3px; left:3px; }
             .theme-switch.light .switch-thumb { left:19px; }
         }
-        /* 语言切换显示控制 */
         [data-lang="zh"] { display:block; }
         [data-lang="en"] { display:none; }
         html.lang-en [data-lang="zh"] { display:none; }
@@ -337,9 +342,7 @@
         </button>
         <div class="theme-switch" id="themeSwitch">
             <span class="switch-label" id="themeLabel">深色</span>
-            <div class="switch-track">
-                <div class="switch-thumb"></div>
-            </div>
+            <div class="switch-track"><div class="switch-thumb"></div></div>
         </div>
     </div>
 
@@ -351,7 +354,6 @@
                 <span data-lang="en">Minecraft Server</span>
             </div>
         </div>
-
         <div class="card">
             <h2>
                 <span data-lang="zh">服务器运行状态</span>
@@ -366,7 +368,7 @@
                 </button>
             </div>
         </div>
-
+        <!-- 其他卡片省略...（保持不变） -->
         <div class="card">
             <h2>
                 <span data-lang="zh">服务器介绍</span>
@@ -383,7 +385,6 @@
                 <p data-lang="en">🔥 Tip: X‑ray is allowed on the server</p>
             </div>
         </div>
-
         <div class="card qq-group-box">
             <h2>
                 <span data-lang="zh">如何加入服务器</span>
@@ -403,7 +404,6 @@
                 <span data-lang="en">Open QQ Group ↗</span>
             </a>
         </div>
-
         <div class="card">
             <h2>
                 <span data-lang="zh">玩家须知</span>
@@ -416,7 +416,6 @@
             <p data-lang="zh">❸ 若无法加入群聊，请核对QQ群号码。</p>
             <p data-lang="en">❸ If you cannot join group, double‑check group number.</p>
         </div>
-
         <div class="footer">Tesseract Minecraft Server © 2026</div>
         <div class="extra-footer">
             <div>Powered by Cloudflare Pages</div>
@@ -429,7 +428,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
             const mainServerEl = document.getElementById('mainServerStatus');
             const smallServerEl = document.getElementById('smallServerStatus');
             const refreshBtn = document.getElementById('refreshStatusBtn');
@@ -438,7 +436,7 @@
             const themeSwitch = document.getElementById('themeSwitch');
             const themeLabel = document.getElementById('themeLabel');
 
-            // ===== API 地址 =====
+            // API 地址
             const apiMain = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
             const apiSmall = "https://api.mcstatus.io/v2/status/java/play.simpfun.cn:28381";
 
@@ -451,7 +449,7 @@
             let mainTimer = null;
             let smallTimer = null;
 
-            // ===== 语言数据 =====
+            // 语言数据
             const langText = {
                 zh: {
                     loading: "检测中...",
@@ -491,29 +489,72 @@
                 }
             };
 
-            // ===== 主题切换 =====
-            let currentTheme = localStorage.getItem('theme') || 'dark';
-            function setTheme(theme) {
-                document.body.classList.toggle('light-mode', theme === 'light');
-                themeSwitch.classList.toggle('light', theme === 'light');
-                themeLabel.textContent = theme === 'light' ? '浅色' : '深色';
-                localStorage.setItem('theme', theme);
-                currentTheme = theme;
+            // ----- 主题（系统同步 + 用户保存） -----
+            let currentTheme = localStorage.getItem('theme');
+            let useSystemTheme = (currentTheme === null);
+            function applyTheme(theme) {
+                const isLight = theme === 'light';
+                document.body.classList.toggle('light-mode', isLight);
+                themeSwitch.classList.toggle('light', isLight);
+                themeLabel.textContent = isLight ? '浅色' : '深色';
             }
-            setTheme(currentTheme);
+            function setTheme(theme, save = true) {
+                if (save) {
+                    localStorage.setItem('theme', theme);
+                    useSystemTheme = false;
+                }
+                currentTheme = theme;
+                applyTheme(theme);
+            }
+            // 初始化
+            if (currentTheme) {
+                applyTheme(currentTheme);
+            } else {
+                const sys = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                applyTheme(sys);
+                currentTheme = sys;
+            }
+            // 监听系统变化
+            const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+            darkMedia.addEventListener('change', (e) => {
+                if (useSystemTheme) {
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    applyTheme(newTheme);
+                    currentTheme = newTheme;
+                }
+            });
+            // 用户点击开关
             themeSwitch.addEventListener('click', function(e) {
                 e.stopPropagation();
-                setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                setTheme(newTheme, true);
+                useSystemTheme = false;
             });
 
-            // ===== 语言切换 =====
+            // ----- 语言切换 -----
             let currentLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
             function setLang(lang) {
                 currentLang = lang;
                 document.documentElement.classList.toggle('lang-en', lang === 'en');
                 langLabel.textContent = lang === 'zh' ? '中文' : 'English';
-                if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main', false);
-                if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small', false);
+                // 重新渲染已有数据或加载状态
+                if (cacheMainData !== undefined) {
+                    updateSingleServer(mainServerEl, cacheMainData, 'main', false);
+                } else {
+                    // 数据未加载，显示“检测中...”但需要临时将 mainLoading 置为 true 才能显示加载文本
+                    const wasLoading = mainLoading;
+                    mainLoading = true;
+                    updateSingleServer(mainServerEl, null, 'main', false);
+                    mainLoading = wasLoading;
+                }
+                if (cacheSmallData !== undefined) {
+                    updateSingleServer(smallServerEl, cacheSmallData, 'small', false);
+                } else {
+                    const wasLoading = smallLoading;
+                    smallLoading = true;
+                    updateSingleServer(smallServerEl, null, 'small', false);
+                    smallLoading = wasLoading;
+                }
             }
             setLang(currentLang);
             changeLangBtn.addEventListener('click', function() {
@@ -522,7 +563,7 @@
 
             function getCurrentLang() { return currentLang; }
 
-            // ===== 核心功能函数 =====
+            // ----- 核心函数 -----
             const POTATO_ICON = `<img src="tudou.png" alt="毒马铃薯" class="potato-icon">`;
 
             function parseFeatures(motdClean) {
@@ -590,7 +631,6 @@
                         `${L.featureBedrock}：${statusMap(features.bedrock)}`,
                         `${L.featureCross}：${statusMap(features.cross)}`
                     ];
-
                     el.innerHTML = `
                         <div class="server-head-row"><div>${nameWithIcon}</div></div>
                         <div class="server-info-line">
@@ -619,7 +659,7 @@
                 }
             }
 
-            // ===== 带超时的 fetch（超时 60 秒） =====
+            // 带超时的 fetch（超时 60 秒）
             async function fetchServer(apiUrl, controller, timeout = 60000) {
                 const timer = setTimeout(() => controller.abort(), timeout);
                 try {
@@ -657,6 +697,7 @@
                     else smallTimer = t;
                 };
 
+                // 取消旧请求
                 const oldCtrl = getController();
                 if (oldCtrl) try { oldCtrl.abort(); } catch(e) {}
                 const oldTimer = getTimer();
@@ -665,8 +706,10 @@
                 const controller = new AbortController();
                 setController(controller);
                 setLoading(true);
+                // 立即显示加载状态
                 updateSingleServer(el, null, type, false);
 
+                // 30秒后显示重试按钮
                 const timer = setTimeout(() => {
                     if (isMain ? mainLoading : smallLoading) {
                         updateSingleServer(el, null, type, true);
@@ -681,22 +724,34 @@
                 setLoading(false);
                 setData(data);
                 if (getController() === controller) setController(null);
+                // 更新为最终状态（不再显示重试按钮）
                 updateSingleServer(el, data, type, false);
             }
 
+            // 同时检测两个服务器
             async function checkAllStatus() {
-                mainLoading = false;
-                smallLoading = false;
-                refreshBtn.disabled = true;
+                // 取消所有旧请求
                 if (mainController) try { mainController.abort(); } catch(e) {}
                 if (smallController) try { smallController.abort(); } catch(e) {}
                 mainController = null; smallController = null;
                 if (mainTimer) { clearTimeout(mainTimer); mainTimer = null; }
                 if (smallTimer) { clearTimeout(smallTimer); smallTimer = null; }
+
+                // 设置为加载状态
+                mainLoading = true;
+                smallLoading = true;
+                updateBottomButton();
+
+                // 立即显示加载状态（不显示重试按钮）
+                updateSingleServer(mainServerEl, null, 'main', false);
+                updateSingleServer(smallServerEl, null, 'small', false);
+
+                // 发起请求
                 fetchSingleServer('main');
                 fetchSingleServer('small');
             }
 
+            // 页面加载后执行
             requestAnimationFrame(() => {
                 checkAllStatus();
             });
