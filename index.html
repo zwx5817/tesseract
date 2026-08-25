@@ -385,6 +385,8 @@ let mainLoading = false;
 let smallLoading = false;
 let mainController = null;
 let smallController = null;
+let mainTimer = null;
+let smallTimer = null;
 
 const langText = {
     zh:{
@@ -425,9 +427,9 @@ let currentLang = getBrowserLang();
 function setLang(lang){
     currentLang = lang;
     document.documentElement.classList.toggle('lang-en', lang === 'en');
-    // 重新渲染已有数据
-    if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main');
-    if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small');
+    // 重新渲染已有数据（仅显示状态，不显示按钮）
+    if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main', false);
+    if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small', false);
 }
 
 changeLangBtn.onclick = ()=> {
@@ -448,52 +450,45 @@ function getFeatureText(data){
     return '';
 }
 
-// 更新单个服务器状态显示
-function updateSingleServer(el, data, type) {
+// 更新单个服务器状态显示，showRetry 控制是否显示“强制重新检测”按钮（仅在加载超时时为 true）
+function updateSingleServer(el, data, type, showRetry = false) {
     if (!el) return;
     const L = langText[getCurrentLang()];
     const name = type === 'main' ? L.mainName : L.smallName;
     const offlineWarn = type === 'main' ? L.mainOfflineWarn : L.smallOfflineWarn;
 
-    // 如果正在加载，显示加载状态（带重试按钮）
+    // 如果正在加载，根据 showRetry 决定是否显示按钮
     const isLoading = (type === 'main') ? mainLoading : smallLoading;
     if (isLoading) {
         el.innerHTML = `
             <div class="server-head-row">
                 <div>${name}</div>
-                <button class="retry-btn" data-type="${type}" ${isLoading ? '' : ''}>${L.retry}</button>
+                ${showRetry ? `<button class="retry-btn" data-type="${type}">${L.retry}</button>` : ''}
             </div>
             <div class="server-info-line">
                 <div class="server-info-block">${L.loading}</div>
             </div>
         `;
-        // 绑定重试按钮事件
-        const btn = el.querySelector('.retry-btn');
-        if (btn) {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                fetchSingleServer(type);
-            });
+        if (showRetry) {
+            const btn = el.querySelector('.retry-btn');
+            if (btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    fetchSingleServer(type);
+                });
+            }
         }
         return;
     }
 
+    // 加载完成（有数据或 null），不显示按钮
     if (data === null) {
-        // 检测失败
         el.innerHTML = `
             <div class="server-head-row">
                 <div>${name}</div>
-                <button class="retry-btn" data-type="${type}">${L.retry}</button>
             </div>
             <div class="server-info-line"><span class="warn-text">${L.apiFail}</span></div>
         `;
-        const btn = el.querySelector('.retry-btn');
-        if (btn) {
-            btn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                fetchSingleServer(type);
-            });
-        }
         return;
     }
 
@@ -503,7 +498,6 @@ function updateSingleServer(el, data, type) {
         el.innerHTML = `
             <div class="server-head-row">
                 <div>${name}</div>
-                <button class="retry-btn" data-type="${type}">${L.retry}</button>
             </div>
             <div class="server-info-line">
                 <div class="server-info-block">
@@ -519,7 +513,6 @@ function updateSingleServer(el, data, type) {
         el.innerHTML = `
             <div class="server-head-row">
                 <div>${name}</div>
-                <button class="retry-btn" data-type="${type}">${L.retry}</button>
             </div>
             <div class="server-info-line">
                 <div class="server-info-block">
@@ -529,14 +522,6 @@ function updateSingleServer(el, data, type) {
             </div>
             <div class="server-warn-line warn-text">${offlineWarn}</div>
         `;
-    }
-    // 绑定重试按钮
-    const btn = el.querySelector('.retry-btn');
-    if (btn) {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            fetchSingleServer(type);
-        });
     }
 }
 
@@ -552,7 +537,7 @@ async function fetchServer(apiUrl, controller, timeout = 60000) {
         return await res.json();
     } catch (e) {
         clearTimeout(timer);
-        return null; // 超时或网络错误统一返回 null
+        return null;
     }
 }
 
@@ -574,11 +559,22 @@ async function fetchSingleServer(type) {
         if (isMain) mainController = ctrl;
         else smallController = ctrl;
     };
+    const getTimer = () => isMain ? mainTimer : smallTimer;
+    const setTimer = (t) => {
+        if (isMain) mainTimer = t;
+        else smallTimer = t;
+    };
 
     // 取消旧请求
     const oldCtrl = getController();
     if (oldCtrl) {
         try { oldCtrl.abort(); } catch(e) {}
+    }
+    // 清除旧定时器
+    const oldTimer = getTimer();
+    if (oldTimer) {
+        clearTimeout(oldTimer);
+        setTimer(null);
     }
 
     // 创建新控制器
@@ -586,18 +582,32 @@ async function fetchSingleServer(type) {
     setController(controller);
     setLoading(true);
 
-    // 立即显示加载状态（带重试按钮）
-    updateSingleServer(el, null, type); // 传入null不会显示数据，但会显示加载状态
+    // 先显示加载状态，不显示按钮
+    updateSingleServer(el, null, type, false);
+
+    // 设置30秒定时器，显示按钮（如果仍在加载）
+    const timer = setTimeout(() => {
+        if (isMain ? mainLoading : smallLoading) {
+            updateSingleServer(el, null, type, true);
+        }
+    }, 30000);
+    setTimer(timer);
 
     const data = await fetchServer(apiUrl, controller);
+    // 清除定时器
+    const curTimer = getTimer();
+    if (curTimer) {
+        clearTimeout(curTimer);
+        setTimer(null);
+    }
     setLoading(false);
     setData(data);
     // 清空控制器
     if (getController() === controller) {
         setController(null);
     }
-    // 更新显示
-    updateSingleServer(el, data, type);
+    // 显示结果（不显示按钮）
+    updateSingleServer(el, data, type, false);
 }
 
 // 同时检测两个服务器
@@ -611,18 +621,14 @@ async function checkAllStatus(){
         try { smallController.abort(); } catch(e) {}
         smallController = null;
     }
+    if (mainTimer) { clearTimeout(mainTimer); mainTimer = null; }
+    if (smallTimer) { clearTimeout(smallTimer); smallTimer = null; }
     mainLoading = false;
     smallLoading = false;
 
     // 发起两个独立检测
     fetchSingleServer('main');
     fetchSingleServer('small');
-}
-
-// 语言切换时重绘
-function refreshLanguage() {
-    if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main');
-    if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small');
 }
 
 window.addEventListener('load', ()=>{
