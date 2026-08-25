@@ -450,6 +450,11 @@ function getFeatureText(data){
     return '';
 }
 
+// 更新底部按钮状态
+function updateBottomButton() {
+    refreshBtn.disabled = mainLoading || smallLoading;
+}
+
 // 更新单个服务器状态显示，showRetry 控制是否显示“强制重新检测”按钮（仅在加载超时时为 true）
 function updateSingleServer(el, data, type, showRetry = false) {
     if (!el) return;
@@ -549,6 +554,7 @@ async function fetchSingleServer(type) {
     const setLoading = (val) => {
         if (isMain) mainLoading = val;
         else smallLoading = val;
+        updateBottomButton(); // 更新底部按钮状态
     };
     const setData = (val) => {
         if (isMain) cacheMainData = val;
@@ -612,7 +618,12 @@ async function fetchSingleServer(type) {
 
 // 同时检测两个服务器
 async function checkAllStatus(){
-    // 如果某个正在加载，先取消再重新检测
+    // 重置加载状态并禁用底部按钮
+    mainLoading = false;
+    smallLoading = false;
+    refreshBtn.disabled = true;
+
+    // 取消所有旧请求
     if (mainController) {
         try { mainController.abort(); } catch(e) {}
         mainController = null;
@@ -623,8 +634,6 @@ async function checkAllStatus(){
     }
     if (mainTimer) { clearTimeout(mainTimer); mainTimer = null; }
     if (smallTimer) { clearTimeout(smallTimer); smallTimer = null; }
-    mainLoading = false;
-    smallLoading = false;
 
     // 发起两个独立检测
     fetchSingleServer('main');
