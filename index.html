@@ -169,7 +169,7 @@
             gap:10px;
             min-width:0;
         }
-        .bedrock-tip-row{
+        .features-row{
             font-size:14px;
             color:#aaaaaa;
             margin-top:4px;
@@ -178,22 +178,7 @@
             margin-top:4px;
             font-size:14px;
         }
-        .player-toggle-btn{
-            padding:4px 10px;
-            background:#2b4b80;
-            border:none;
-            color:#fff;
-            border-radius:4px;
-            cursor:pointer;
-            font-size:13px;
-        }
-        .player-toggle-btn.loading-state{
-            background:#444;
-            opacity:0.65;
-        }
-        .player-toggle-btn:hover:not(.loading-state){
-            background:#3860a0;
-        }
+
         .warn-text{
             color:#ff6b6b;
         }
@@ -232,6 +217,23 @@
             background:#444444;
             cursor:not-allowed;
         }
+        .retry-btn {
+            padding:4px 12px;
+            background:#d84a2a;
+            color:#fff;
+            border:none;
+            border-radius:4px;
+            cursor:pointer;
+            font-size:13px;
+            margin-left:10px;
+        }
+        .retry-btn:hover {
+            background:#b33a1a;
+        }
+        .retry-btn:disabled {
+            background:#555;
+            cursor:not-allowed;
+        }
 
         @keyframes fadeIn {
             from {
@@ -258,128 +260,6 @@
         [data-lang="en"]{ display:none; }
         html.lang-en [data-lang="zh"]{ display:none; }
         html.lang-en [data-lang="en"]{ display:block; }
-
-        .modal-mask{
-            position:fixed;
-            inset:0;
-            background:rgba(0,0,0,0.75);
-            display:none;
-            z-index:999;
-            align-items:center;
-            justify-content:center;
-            padding:16px;
-        }
-        .modal-box{
-            width:100%;
-            max-width:480px;
-            max-height:85vh;
-            background:#181818;
-            border-radius:10px;
-            overflow:hidden;
-            display:flex;
-            flex-direction:column;
-        }
-        .modal-header{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            padding:14px 18px;
-            background:#222;
-        }
-        .modal-title{
-            font-size:16px;
-        }
-        .modal-close{
-            background:none;
-            border:none;
-            color:#fff;
-            font-size:22px;
-            cursor:pointer;
-            width:28px;
-            height:28px;
-            line-height:28px;
-            text-align:center;
-            padding:0;
-        }
-        .modal-body{
-            padding:18px;
-            font-size:14px;
-            color:#ddd;
-            overflow-y:auto;
-            flex:1;
-        }
-
-        .player-search-wrap{
-            margin-bottom:14px;
-            position:relative;
-        }
-        .player-search-input{
-            width:100%;
-            padding:8px 34px 8px 10px;
-            background:#272727;
-            border:1px solid #3a3a3a;
-            color:#fff;
-            border-radius:6px;
-            font-size:14px;
-        }
-        .player-search-input:focus{
-            outline:none;
-            border-color:#54a0ff;
-        }
-        .search-clear-btn{
-            position:absolute;
-            right:10px;
-            top:50%;
-            transform:translateY(-50%);
-            background:none;
-            border:none;
-            color:#999;
-            font-size:18px;
-            cursor:pointer;
-            width:22px;
-            height:22px;
-            line-height:22px;
-            text-align:center;
-        }
-        .search-clear-btn:hover{
-            color:#fff;
-        }
-
-        #playerListWrap{
-        }
-        .player-list-col{
-            column-count:2;
-            column-gap:24px;
-            line-height:1.75;
-        }
-        .player-list-col div{
-            break-inside:avoid;
-        }
-
-        .player-pagination{
-            margin-top:16px;
-            display:flex;
-            gap:10px;
-            justify-content:center;
-            align-items:center;
-        }
-        .page-btn{
-            padding:5px 12px;
-            background:#2b4b80;
-            color:#fff;
-            border:none;
-            border-radius:4px;
-            cursor:pointer;
-        }
-        .page-btn:disabled{
-            background:#444;
-            opacity:0.55;
-            cursor:not-allowed;
-        }
-        .page-info{
-            font-size:13px;
-            color:#aaa;
-        }
     </style>
 </head>
 <body>
@@ -488,43 +368,23 @@
         </div>
     </div>
 
-    <div class="modal-mask" id="playerModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <div class="modal-title" id="modalTitle"></div>
-                <button class="modal-close" id="modalCloseBtn">×</button>
-            </div>
-            <div class="modal-body" id="modalBody">
-                <div class="player-search-wrap">
-                    <input id="playerSearchInput" class="player-search-input" placeholder="">
-                    <button class="search-clear-btn" id="searchClearBtn">×</button>
-                </div>
-                <div id="playerListWrap"></div>
-            </div>
-        </div>
-    </div>
-
 <script>
 const mainServerEl = document.getElementById('mainServerStatus');
 const smallServerEl = document.getElementById('smallServerStatus');
 const refreshBtn = document.getElementById('refreshStatusBtn');
 const changeLangBtn = document.getElementById('changeLangBtn');
 
-const playerModal = document.getElementById('playerModal');
-const modalTitle = document.getElementById('modalTitle');
-const playerListWrap = document.getElementById('playerListWrap');
-const modalCloseBtn = document.getElementById('modalCloseBtn');
-
 const apiMain = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
 const apiSmall = "https://api.mcsrvstat.us/2/play.simpfun.cn:28381";
 
 let cacheMainData = null;
 let cacheSmallData = null;
-let isLoading = false;
 
-const PAGE_SIZE = 20;
-let modalRawPlayers = [];
-let modalCurrentPage = 1;
+// 每个服务器的加载状态和控制器
+let mainLoading = false;
+let smallLoading = false;
+let mainController = null;
+let smallController = null;
 
 const langText = {
     zh:{
@@ -533,21 +393,12 @@ const langText = {
         smallName:"小服务器",
         online:"在线",
         offline:"离线",
-        bedrockTip:"兼容基岩版登录",
         mainOfflineWarn:"服务器可能正在被攻击",
         smallOfflineWarn:"可能是服主没开机（也有可能被打了）",
         player:"在线玩家：{now}/{max}，版本：{ver}",
         apiFail:"检测服务不可用",
-        togglePlayer:"查看玩家",
-        offlineCannotView:"仅服务器在线时可用",
-        noPlayerList:"未返回玩家列表",
-        emptyPlayer:"当前没有玩家在线",
-        waitFinish:"请等待检测完成",
-        modalPlayerTitle:"在线玩家列表",
-        searchPlaceholder:"搜索玩家名字...",
-        noSearchResult:"没有匹配玩家",
-        prevPage:"上一页",
-        nextPage:"下一页"
+        featureLabel:"特性：",
+        retry:"强制重新检测"
     },
     en:{
         loading:"Detecting...",
@@ -555,21 +406,12 @@ const langText = {
         smallName:"Small Server",
         online:"Online",
         offline:"Offline",
-        bedrockTip:"Bedrock Edition compatible",
         mainOfflineWarn:"Server may be under attack",
         smallOfflineWarn:"Possibly the host has not turned on the server (may also be attacked)",
         player:"Players: {now}/{max}, Version: {ver}",
         apiFail:"Status service unavailable",
-        togglePlayer:"View Players",
-        offlineCannotView:"Only available when server is online",
-        noPlayerList:"Player list not available",
-        emptyPlayer:"No players online",
-        waitFinish:"Please wait for detection to complete",
-        modalPlayerTitle:"Online Player List",
-        searchPlaceholder:"Search player...",
-        noSearchResult:"No matching players",
-        prevPage:"Prev",
-        nextPage:"Next"
+        featureLabel:"Features: ",
+        retry:"Force Retry"
     }
 };
 
@@ -583,7 +425,9 @@ let currentLang = getBrowserLang();
 function setLang(lang){
     currentLang = lang;
     document.documentElement.classList.toggle('lang-en', lang === 'en');
-    renderStatus(cacheMainData, cacheSmallData);
+    // 重新渲染已有数据
+    if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main');
+    if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small');
 }
 
 changeLangBtn.onclick = ()=> {
@@ -594,134 +438,88 @@ function getCurrentLang(){
     return currentLang;
 }
 
-function openModal(titleText){
-    modalTitle.innerText = titleText;
-    playerModal.style.display = 'flex';
-}
-function closeModal(){
-    playerModal.style.display = 'none';
-    modalRawPlayers = [];
-    modalCurrentPage = 1;
-}
-modalCloseBtn.onclick = closeModal;
-playerModal.onclick = function(e){
-    if(e.target === playerModal){
-        closeModal();
+// 从 motd.clean 中提取特性描述（第二行）
+function getFeatureText(data){
+    if (!data || !data.motd || !data.motd.clean) return '';
+    const lines = data.motd.clean.split('\n');
+    if (lines.length > 1) {
+        return lines[1].trim();
     }
-};
-document.addEventListener('keydown',function(e){
-    if(e.key === 'Escape') closeModal();
-});
+    return '';
+}
 
-function renderPlayerList(){
+// 更新单个服务器状态显示
+function updateSingleServer(el, data, type) {
+    if (!el) return;
     const L = langText[getCurrentLang()];
-    const searchInput = document.getElementById("playerSearchInput");
-    const searchVal = searchInput.value.trim().toLowerCase();
+    const name = type === 'main' ? L.mainName : L.smallName;
+    const offlineWarn = type === 'main' ? L.mainOfflineWarn : L.smallOfflineWarn;
 
-    let filtered = modalRawPlayers.filter(name=> name.toLowerCase().includes(searchVal));
-    const total = filtered.length;
-    const totalPages = Math.ceil(total / PAGE_SIZE);
-
-    if(modalCurrentPage > totalPages) modalCurrentPage = totalPages || 1;
-    if(modalCurrentPage < 1) modalCurrentPage = 1;
-
-    const startIdx = (modalCurrentPage - 1) * PAGE_SIZE;
-    const pageItems = filtered.slice(startIdx, startIdx + PAGE_SIZE);
-
-    let html = "";
-    if(total === 0){
-        html += `<div class="warn-text">${searchVal ? L.noSearchResult : L.emptyPlayer}</div>`;
-    }else{
-        html += `<div class="player-list-col">${pageItems.map(n=>`<div>${n}</div>`).join('')}</div>`;
-    }
-
-    if(totalPages > 1){
-        html += `<div class="player-pagination">
-            <button class="page-btn" id="btnPrevPage" ${modalCurrentPage <=1 ? "disabled" : ""}>${L.prevPage}</button>
-            <span class="page-info">${modalCurrentPage} / ${totalPages}</span>
-            <button class="page-btn" id="btnNextPage" ${modalCurrentPage >= totalPages ? "disabled" : ""}>${L.nextPage}</button>
-        </div>`;
-    }
-    playerListWrap.innerHTML = html;
-
-    const btnPrev = document.getElementById("btnPrevPage");
-    const btnNext = document.getElementById("btnNextPage");
-    if(btnPrev) btnPrev.onclick = ()=>{ modalCurrentPage--; renderPlayerList(); };
-    if(btnNext) btnNext.onclick = ()=>{ modalCurrentPage++; renderPlayerList(); };
-}
-
-function openPlayerModal(data, L){
-    if(!data || !data.online) {
-        openModal(L.modalPlayerTitle);
-        playerListWrap.innerHTML = `<div class="warn-text">${L.offlineCannotView}</div>`;
-        return;
-    }
-    if(!data.players || !Array.isArray(data.players.list)){
-        openModal(L.modalPlayerTitle);
-        playerListWrap.innerHTML = `<div>${L.noPlayerList}</div>`;
-        return;
-    }
-    const raw = [...data.players.list];
-    //英文半角. 基岩版账号放后面，兼容全角．容错
-    const normal = raw.filter(n=> !n.startsWith(".") && !n.startsWith("．")).sort((a,b)=> a.localeCompare(b, undefined, {sensitivity:'base'}));
-    const dotPrefix = raw.filter(n=> n.startsWith(".") || n.startsWith("．")).sort((a,b)=> a.localeCompare(b, undefined, {sensitivity:'base'}));
-    modalRawPlayers = [...normal, ...dotPrefix];
-    modalCurrentPage = 1;
-
-    openModal(L.modalPlayerTitle);
-    const searchInput = document.getElementById("playerSearchInput");
-    const clearBtn = document.getElementById("searchClearBtn");
-    searchInput.placeholder = L.searchPlaceholder;
-    searchInput.value = "";
-
-    searchInput.oninput = ()=>{
-        modalCurrentPage = 1;
-        renderPlayerList();
-    };
-    clearBtn.onclick = ()=>{
-        searchInput.value = "";
-        modalCurrentPage = 1;
-        renderPlayerList();
-        searchInput.focus();
-    };
-    renderPlayerList();
-}
-
-function renderStatus(mainData, smallData){
-    if(!mainServerEl || !smallServerEl) return;
-    const L = langText[getCurrentLang()];
-    const loadingClass = isLoading ? "loading-state" : "";
-
-    if(!mainData){
-        mainServerEl.innerHTML = `
+    // 如果正在加载，显示加载状态（带重试按钮）
+    const isLoading = (type === 'main') ? mainLoading : smallLoading;
+    if (isLoading) {
+        el.innerHTML = `
             <div class="server-head-row">
-                <div>${L.mainName}</div>
-                <button class="player-toggle-btn ${loadingClass}" id="btnMainPlayer">${L.togglePlayer}</button>
+                <div>${name}</div>
+                <button class="retry-btn" data-type="${type}" ${isLoading ? '' : ''}>${L.retry}</button>
+            </div>
+            <div class="server-info-line">
+                <div class="server-info-block">${L.loading}</div>
+            </div>
+        `;
+        // 绑定重试按钮事件
+        const btn = el.querySelector('.retry-btn');
+        if (btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                fetchSingleServer(type);
+            });
+        }
+        return;
+    }
+
+    if (data === null) {
+        // 检测失败
+        el.innerHTML = `
+            <div class="server-head-row">
+                <div>${name}</div>
+                <button class="retry-btn" data-type="${type}">${L.retry}</button>
             </div>
             <div class="server-info-line"><span class="warn-text">${L.apiFail}</span></div>
         `;
-    }else if(mainData.online){
-        const ver = mainData.version || "Unknown";
-        mainServerEl.innerHTML = `
+        const btn = el.querySelector('.retry-btn');
+        if (btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                fetchSingleServer(type);
+            });
+        }
+        return;
+    }
+
+    if (data.online) {
+        const ver = data.version || "Unknown";
+        const feature = getFeatureText(data);
+        el.innerHTML = `
             <div class="server-head-row">
-                <div>${L.mainName}</div>
-                <button class="player-toggle-btn ${loadingClass}" id="btnMainPlayer">${L.togglePlayer}</button>
+                <div>${name}</div>
+                <button class="retry-btn" data-type="${type}">${L.retry}</button>
             </div>
             <div class="server-info-line">
                 <div class="server-info-block">
                     <span class="dot-online">●</span>
                     <span>${L.online}</span>
                     <span>—</span>
-                    <span>${L.player.replace('{now}',mainData.players.online).replace('{max}',mainData.players.max).replace('{ver}',ver)}</span>
+                    <span>${L.player.replace('{now}',data.players.online).replace('{max}',data.players.max).replace('{ver}',ver)}</span>
                 </div>
             </div>
-            <div class="bedrock-tip-row">| ${L.bedrockTip}</div>
+            ${feature ? `<div class="features-row">${L.featureLabel}${feature}</div>` : ''}
         `;
-    }else{
-        mainServerEl.innerHTML = `
+    } else {
+        el.innerHTML = `
             <div class="server-head-row">
-                <div>${L.mainName}</div>
-                <button class="player-toggle-btn ${loadingClass}" id="btnMainPlayer">${L.togglePlayer}</button>
+                <div>${name}</div>
+                <button class="retry-btn" data-type="${type}">${L.retry}</button>
             </div>
             <div class="server-info-line">
                 <div class="server-info-block">
@@ -729,107 +527,102 @@ function renderStatus(mainData, smallData){
                     <span>${L.offline}</span>
                 </div>
             </div>
-            <div class="server-warn-line warn-text">${L.mainOfflineWarn}</div>
+            <div class="server-warn-line warn-text">${offlineWarn}</div>
         `;
     }
-
-    if(!smallData){
-        smallServerEl.innerHTML = `
-            <div class="server-head-row">
-                <div>${L.smallName}</div>
-                <button class="player-toggle-btn ${loadingClass}" id="btnSmallPlayer">${L.togglePlayer}</button>
-            </div>
-            <div class="server-info-line"><span class="warn-text">${L.apiFail}</span></div>
-        `;
-    }else if(smallData.online){
-        const ver = smallData.version || "Unknown";
-        smallServerEl.innerHTML = `
-            <div class="server-head-row">
-                <div>${L.smallName}</div>
-                <button class="player-toggle-btn ${loadingClass}" id="btnSmallPlayer">${L.togglePlayer}</button>
-            </div>
-            <div class="server-info-line">
-                <div class="server-info-block">
-                    <span class="dot-online">●</span>
-                    <span>${L.online}</span>
-                    <span>—</span>
-                    <span>${L.player.replace('{now}',smallData.players.online).replace('{max}',smallData.players.max).replace('{ver}',ver)}</span>
-                </div>
-            </div>
-            <div class="bedrock-tip-row">| ${L.bedrockTip}</div>
-        `;
-    }else{
-        smallServerEl.innerHTML = `
-            <div class="server-head-row">
-                <div>${L.smallName}</div>
-                <button class="player-toggle-btn ${loadingClass}" id="btnSmallPlayer">${L.togglePlayer}</button>
-            </div>
-            <div class="server-info-line">
-                <div class="server-info-block">
-                    <span class="dot-offline">●</span>
-                    <span>${L.offline}</span>
-                </div>
-            </div>
-            <div class="server-warn-line warn-text">${L.smallOfflineWarn}</div>
-        `;
-    }
-
-    const btnMain = document.getElementById('btnMainPlayer');
-    const btnSmall = document.getElementById('btnSmallPlayer');
-    const Lnow = langText[getCurrentLang()];
-
-    if(btnMain){
-        btnMain.onclick = function(){
-            if(isLoading){
-                openModal(Lnow.modalPlayerTitle);
-                playerListWrap.innerHTML = `<div class="warn-text">${Lnow.waitFinish}</div>`;
-                return;
-            }
-            openPlayerModal(cacheMainData, Lnow);
-        }
-    }
-    if(btnSmall){
-        btnSmall.onclick = function(){
-            if(isLoading){
-                openModal(Lnow.modalPlayerTitle);
-                playerListWrap.innerHTML = `<div class="warn-text">${Lnow.waitFinish}</div>`;
-                return;
-            }
-            openPlayerModal(cacheSmallData, Lnow);
-        }
+    // 绑定重试按钮
+    const btn = el.querySelector('.retry-btn');
+    if (btn) {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            fetchSingleServer(type);
+        });
     }
 }
 
-async function fetchServer(apiUrl){
-    try{
-        const res = await fetch(apiUrl, {cache:"no-store"});
+// 带超时和可取消的fetch
+async function fetchServer(apiUrl, controller, timeout = 60000) {
+    const timer = setTimeout(() => controller.abort(), timeout);
+    try {
+        const res = await fetch(apiUrl, { 
+            cache: "no-store", 
+            signal: controller.signal 
+        });
+        clearTimeout(timer);
         return await res.json();
-    }catch(e){
-        return null;
+    } catch (e) {
+        clearTimeout(timer);
+        return null; // 超时或网络错误统一返回 null
     }
 }
 
+// 单独检测某个服务器
+async function fetchSingleServer(type) {
+    const isMain = type === 'main';
+    const el = isMain ? mainServerEl : smallServerEl;
+    const apiUrl = isMain ? apiMain : apiSmall;
+    const setLoading = (val) => {
+        if (isMain) mainLoading = val;
+        else smallLoading = val;
+    };
+    const setData = (val) => {
+        if (isMain) cacheMainData = val;
+        else cacheSmallData = val;
+    };
+    const getController = () => isMain ? mainController : smallController;
+    const setController = (ctrl) => {
+        if (isMain) mainController = ctrl;
+        else smallController = ctrl;
+    };
+
+    // 取消旧请求
+    const oldCtrl = getController();
+    if (oldCtrl) {
+        try { oldCtrl.abort(); } catch(e) {}
+    }
+
+    // 创建新控制器
+    const controller = new AbortController();
+    setController(controller);
+    setLoading(true);
+
+    // 立即显示加载状态（带重试按钮）
+    updateSingleServer(el, null, type); // 传入null不会显示数据，但会显示加载状态
+
+    const data = await fetchServer(apiUrl, controller);
+    setLoading(false);
+    setData(data);
+    // 清空控制器
+    if (getController() === controller) {
+        setController(null);
+    }
+    // 更新显示
+    updateSingleServer(el, data, type);
+}
+
+// 同时检测两个服务器
 async function checkAllStatus(){
-    if(!mainServerEl || !smallServerEl || !refreshBtn) return;
-    const L = langText[getCurrentLang()];
-    isLoading = true;
-    refreshBtn.disabled = true;
-    closeModal();
+    // 如果某个正在加载，先取消再重新检测
+    if (mainController) {
+        try { mainController.abort(); } catch(e) {}
+        mainController = null;
+    }
+    if (smallController) {
+        try { smallController.abort(); } catch(e) {}
+        smallController = null;
+    }
+    mainLoading = false;
+    smallLoading = false;
 
-    mainServerEl.innerHTML = `<div class="server-head-row"><div>${L.mainName}</div><button class="player-toggle-btn loading-state" id="btnMainPlayer">${L.togglePlayer}</button></div><div class="server-info-line"><div class="server-info-block">${L.loading}</div></div>`;
-    smallServerEl.innerHTML = `<div class="server-head-row"><div>${L.smallName}</div><button class="player-toggle-btn loading-state" id="btnSmallPlayer">${L.togglePlayer}</button></div><div class="server-info-line"><div class="server-info-block">${L.loading}</div></div>`;
+    // 发起两个独立检测
+    fetchSingleServer('main');
+    fetchSingleServer('small');
+}
 
-    const [mainData, smallData] = await Promise.all([
-        fetchServer(apiMain),
-        fetchServer(apiSmall)
-    ]);
-
-    cacheMainData = mainData;
-    cacheSmallData = smallData;
-    isLoading = false;
-
-    renderStatus(cacheMainData, cacheSmallData);
-    refreshBtn.disabled = false;
+// 语言切换时重绘
+function refreshLanguage() {
+    if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main');
+    if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small');
 }
 
 window.addEventListener('load', ()=>{
