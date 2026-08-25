@@ -6,6 +6,7 @@
     <title>Tesseract - Minecraft Server</title>
     <link rel="icon" href="tudou.png" type="image/png">
     <script>
+        // 立即设置主题，避免闪烁
         (function() {
             const stored = localStorage.getItem('theme');
             let theme = stored;
@@ -411,7 +412,8 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // 确保 DOM 加载完成后再执行
+        function init() {
             const mainServerEl = document.getElementById('mainServerStatus');
             const smallServerEl = document.getElementById('smallServerStatus');
             const refreshBtn = document.getElementById('refreshStatusBtn');
@@ -419,6 +421,12 @@
             const langLabel = document.getElementById('langLabel');
             const themeSwitch = document.getElementById('themeSwitch');
             const themeLabel = document.getElementById('themeLabel');
+
+            // 检查元素是否存在
+            if (!mainServerEl || !smallServerEl) {
+                console.error('关键元素未找到，请检查 HTML');
+                return;
+            }
 
             const apiMain = "https://api.mcstatus.io/v2/status/java/hmfree.tooo.top:20049";
             const apiSmall = "https://api.mcstatus.io/v2/status/java/play.simpfun.cn:28381";
@@ -706,7 +714,14 @@
             // 立即执行检测
             checkAllStatus();
             refreshBtn.addEventListener('click', checkAllStatus);
-        });
+        }
+
+        // 确保 DOM 加载完成后再初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
