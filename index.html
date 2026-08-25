@@ -4,38 +4,147 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tesseract - Minecraft Server</title>
-    <!-- 浏览器标签图标（favicon）使用本地 tudou.png -->
     <link rel="icon" href="tudou.png" type="image/png">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* ===== 全局变量 ===== */
+        :root {
+            --bg-body: #000000;
+            --bg-card: #111111;
+            --bg-card-hover: #1a1a1a;
+            --text-primary: #eeeeee;
+            --text-secondary: #aaaaaa;
+            --text-muted: #777777;
+            --border-color: rgba(255,255,255,0.08);
+            --shadow-color: rgba(0,0,0,0.45);
+            --shadow-text: none;
+            --glass-bg: rgba(255,255,255,0.08);
+            --glass-border: rgba(255,255,255,0.15);
+            --glass-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            --btn-text: #fff;
+            --switch-bg: #333;
+            --switch-dot: #555;
+            --switch-active: #4cd964;
         }
-        html {
-            scroll-behavior: smooth;
+        body.light-mode {
+            --bg-body: #f5f5f5;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f0f0f0;
+            --text-primary: #222222;
+            --text-secondary: #555555;
+            --text-muted: #888888;
+            --border-color: rgba(0,0,0,0.08);
+            --shadow-color: rgba(0,0,0,0.15);
+            --shadow-text: 0 1px 3px rgba(0,0,0,0.15);
+            --glass-bg: rgba(255,255,255,0.25);
+            --glass-border: rgba(255,255,255,0.4);
+            --glass-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            --btn-text: #222;
+            --switch-bg: #ddd;
+            --switch-dot: #fff;
+            --switch-active: #4cd964;
         }
+
+        /* ===== 基础样式 ===== */
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
         body {
-            background-color: #000000;
-            color: #eeeeee;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
             font-family: "Microsoft Yahei", system-ui, sans-serif;
             min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
         }
-        .lang-wrap{
-            position:fixed;
-            top:16px;
-            right:16px;
-            z-index:99;
+
+        /* ===== 右上角控制栏（液态玻璃） ===== */
+        .top-bar {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 99;
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
-        .lang-btn{
-            padding:6px 12px;
-            background:#222;
-            color:#fff;
-            border:1px solid #444;
-            cursor:pointer;
-            border-radius:6px;
-            font-size:16px;
+        .glass-btn {
+            padding: 8px 14px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--btn-text);
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            text-shadow: var(--shadow-text);
         }
+        .glass-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            background: var(--glass-bg);
+            border-color: rgba(255,255,255,0.3);
+        }
+        .glass-btn:active { transform: scale(0.97); }
+
+        /* ===== 主题切换开关（左右滑动） ===== */
+        .theme-switch {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px 6px 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            box-shadow: var(--glass-shadow);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            user-select: none;
+        }
+        .theme-switch:hover {
+            transform: translateY(-2px);
+            background: var(--glass-bg);
+        }
+        .theme-switch .switch-track {
+            width: 44px;
+            height: 24px;
+            background: var(--switch-bg);
+            border-radius: 30px;
+            position: relative;
+            transition: background 0.3s;
+            flex-shrink: 0;
+        }
+        .theme-switch .switch-thumb {
+            width: 18px;
+            height: 18px;
+            background: var(--switch-dot);
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .theme-switch.light .switch-track {
+            background: var(--switch-active);
+        }
+        .theme-switch.light .switch-thumb {
+            left: 23px;
+        }
+        .theme-switch .switch-label {
+            font-size: 14px;
+            color: var(--btn-text);
+            text-shadow: var(--shadow-text);
+            min-width: 32px;
+        }
+
+        /* ===== 页面内容 ===== */
         .container {
             max-width: 850px;
             margin: 0 auto;
@@ -45,10 +154,11 @@
             text-align: center;
             margin-bottom: 40px;
             padding: 50px 16px;
-            background-color: #111111;
+            background-color: var(--bg-card);
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
             animation: fadeIn 0.6s ease-out;
+            transition: background 0.3s, border 0.3s;
         }
         h1 {
             font-size: clamp(32px,8vw,52px);
@@ -59,20 +169,20 @@
         }
         .subtitle {
             font-size: clamp(16px,3vw,20px);
-            color: #aaaaaa;
+            color: var(--text-secondary);
         }
         .card {
-            background-color: #111111;
+            background-color: var(--bg-card);
             border-radius: 12px;
             padding: clamp(20px,4vw,32px);
             margin-bottom: 22px;
-            border: 1px solid rgba(255,255,255,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s, border 0.3s;
             animation: fadeIn 0.6s ease-out;
         }
         .card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+            box-shadow: 0 8px 24px var(--shadow-color);
         }
         h2 {
             color: #73e086;
@@ -82,14 +192,15 @@
         p {
             line-height: 1.8;
             font-size: clamp(15px,2.5vw,16px);
-            color: #dddddd;
+            color: var(--text-primary);
             margin-bottom: 12px;
         }
         .qq-group-box {
-            background-color: #1c1c1c;
+            background-color: var(--bg-card);
             padding: clamp(20px,4vw,28px);
             border-radius: 10px;
             text-align: center;
+            border: 1px solid var(--border-color);
         }
         .qq-num {
             font-size: clamp(22px,5vw,30px);
@@ -98,18 +209,16 @@
             margin:14px 0;
             text-shadow: 0 0 14px rgba(84,160,255,0.4);
         }
-        .qq-link-btn{
-            display:inline-block;
-            padding:12px 28px;
-            background-color:#54a0ff;
-            color:#ffffff;
-            text-decoration:none;
-            border-radius:8px;
+        .qq-link-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background-color: #54a0ff;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
             transition: transform 0.25s ease;
         }
-        .qq-link-btn:hover{
-            transform: translateY(-6px);
-        }
+        .qq-link-btn:hover { transform: translateY(-6px); }
         .hot-tip {
             background-color: rgba(255, 150, 0, 0.15);
             border: 1px solid rgba(255,150,0,0.3);
@@ -117,80 +226,61 @@
             border-radius: 10px;
             margin-top: 15px;
         }
-        .hot-tip p {
-            color: #ffc873;
-            font-weight: 500;
-            margin: 0;
+        .hot-tip p { color: #ffc873; font-weight:500; margin:0; }
+        .server-item {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
-        .server-item{
-            margin-bottom:24px;
-            padding-bottom:16px;
-            border-bottom:1px solid #2a2a2a;
+        .server-item:last-child { border-bottom: none; margin-bottom:0; padding-bottom:0; }
+        .server-head-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
         }
-        .server-item:last-child{
-            border-bottom:none;
-            margin-bottom:0;
-            padding-bottom:0;
+        .server-info-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 15px;
+            color: var(--text-secondary);
         }
-        .server-head-row{
-            display:flex;
-            align-items:center;
-            gap:12px;
-            flex-wrap:wrap;
-            margin-bottom:6px;
+        .server-info-block {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
         }
-        .server-info-line{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            flex-wrap:wrap;
-            font-size:15px;
-            color:#ddd;
+        .features-row {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
-        .server-info-block{
-            display:flex;
-            align-items:center;
-            gap:10px;
-            min-width:0;
-        }
-        .features-row{
-            font-size:14px;
-            color:#aaaaaa;
-            margin-top:4px;
-            display:flex;
-            flex-direction:column;
-            gap:2px;
-        }
-        .features-row span {
-            display:inline-block;
-        }
-        .server-warn-line{
-            margin-top:4px;
-            font-size:14px;
-        }
-        .warn-text{
-            color:#ff6b6b;
-        }
+        .features-row span { display: inline-block; }
+        .server-warn-line { margin-top:4px; font-size:14px; }
+        .warn-text { color:#ff6b6b; }
         .footer {
             text-align: center;
             margin-top: 50px;
-            color: #777777;
+            color: var(--text-muted);
             font-size: 14px;
         }
-        .extra-footer{
+        .extra-footer {
             margin-top:20px;
             text-align:center;
             font-size:13px;
-            color:#888888;
+            color: var(--text-muted);
             line-height:1.8;
         }
-        .dot-online{
-            color:#28c740;
-        }
-        .dot-offline{
-            color:#e53935;
-        }
-        #refreshStatusBtn{
+        .dot-online { color:#28c740; }
+        .dot-offline { color:#e53935; }
+        #refreshStatusBtn {
             padding:10px 22px;
             background:#3070d8;
             color:white;
@@ -199,10 +289,7 @@
             cursor:pointer;
             font-size:16px;
         }
-        #refreshStatusBtn:disabled{
-            background:#444444;
-            cursor:not-allowed;
-        }
+        #refreshStatusBtn:disabled { background:#444; cursor:not-allowed; }
         .retry-btn {
             padding:4px 12px;
             background:#d84a2a;
@@ -213,13 +300,8 @@
             font-size:13px;
             margin-left:10px;
         }
-        .retry-btn:hover {
-            background:#b33a1a;
-        }
-        .retry-btn:disabled {
-            background:#555;
-            cursor:not-allowed;
-        }
+        .retry-btn:hover { background:#b33a1a; }
+        .retry-btn:disabled { background:#555; cursor:not-allowed; }
         .potato-icon {
             width: 26px;
             height: 26px;
@@ -228,33 +310,37 @@
             margin-right: 4px;
         }
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity:0; transform:translateY(20px); }
+            to { opacity:1; transform:translateY(0); }
         }
         @media (max-width: 480px) {
-            .header {
-                padding:30px 12px;
-            }
-            .lang-wrap{
-                top:8px;
-                right:8px;
-            }
+            .header { padding:30px 12px; }
+            .top-bar { top:8px; right:8px; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+            .glass-btn { padding:6px 10px; font-size:13px; }
+            .theme-switch { padding:4px 8px; }
+            .theme-switch .switch-track { width:36px; height:20px; }
+            .theme-switch .switch-thumb { width:14px; height:14px; top:3px; left:3px; }
+            .theme-switch.light .switch-thumb { left:19px; }
         }
-        [data-lang="zh"]{ display:block; }
-        [data-lang="en"]{ display:none; }
-        html.lang-en [data-lang="zh"]{ display:none; }
-        html.lang-en [data-lang="en"]{ display:block; }
+        /* 语言切换显示控制 */
+        [data-lang="zh"] { display:block; }
+        [data-lang="en"] { display:none; }
+        html.lang-en [data-lang="zh"] { display:none; }
+        html.lang-en [data-lang="en"] { display:block; }
     </style>
 </head>
 <body>
-    <div class="lang-wrap">
-        <button class="lang-btn" id="changeLangBtn">Change Language</button>
+    <!-- 右上角控制栏 -->
+    <div class="top-bar">
+        <button class="glass-btn" id="changeLangBtn">
+            <span>🌐</span> <span id="langLabel">中文</span>
+        </button>
+        <div class="theme-switch" id="themeSwitch">
+            <span class="switch-label" id="themeLabel">深色</span>
+            <div class="switch-track">
+                <div class="switch-thumb"></div>
+            </div>
+        </div>
     </div>
 
     <div class="container">
@@ -271,12 +357,8 @@
                 <span data-lang="zh">服务器运行状态</span>
                 <span data-lang="en">Server Status</span>
             </h2>
-            <div class="server-item">
-                <div id="mainServerStatus"></div>
-            </div>
-            <div class="server-item">
-                <div id="smallServerStatus"></div>
-            </div>
+            <div class="server-item"><div id="mainServerStatus"></div></div>
+            <div class="server-item"><div id="smallServerStatus"></div></div>
             <div style="text-align:center;margin-top:12px;">
                 <button id="refreshStatusBtn">
                     <span data-lang="zh">重新检测状态</span>
@@ -335,9 +417,7 @@
             <p data-lang="en">❸ If you cannot join group, double‑check group number.</p>
         </div>
 
-        <div class="footer">
-            Tesseract Minecraft Server © 2026
-        </div>
+        <div class="footer">Tesseract Minecraft Server © 2026</div>
         <div class="extra-footer">
             <div>Powered by Cloudflare Pages</div>
             <div>
@@ -347,307 +427,282 @@
         </div>
     </div>
 
-<script>
-const mainServerEl = document.getElementById('mainServerStatus');
-const smallServerEl = document.getElementById('smallServerStatus');
-const refreshBtn = document.getElementById('refreshStatusBtn');
-const changeLangBtn = document.getElementById('changeLangBtn');
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-const apiMain = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
-const apiSmall = "https://api.mcsrvstat.us/2/play.simpfun.cn:28381";
+            const mainServerEl = document.getElementById('mainServerStatus');
+            const smallServerEl = document.getElementById('smallServerStatus');
+            const refreshBtn = document.getElementById('refreshStatusBtn');
+            const changeLangBtn = document.getElementById('changeLangBtn');
+            const langLabel = document.getElementById('langLabel');
+            const themeSwitch = document.getElementById('themeSwitch');
+            const themeLabel = document.getElementById('themeLabel');
 
-let cacheMainData = null;
-let cacheSmallData = null;
+            // ===== API 地址 =====
+            const apiMain = "https://api.mcsrvstat.us/2/hmfree.tooo.top:20049";
+            const apiSmall = "https://api.mcstatus.io/v2/status/java/play.simpfun.cn:28381";
 
-let mainLoading = false;
-let smallLoading = false;
-let mainController = null;
-let smallController = null;
-let mainTimer = null;
-let smallTimer = null;
+            let cacheMainData = null;
+            let cacheSmallData = null;
+            let mainLoading = false;
+            let smallLoading = false;
+            let mainController = null;
+            let smallController = null;
+            let mainTimer = null;
+            let smallTimer = null;
 
-// 服务器名称旁边的图标，使用本地 tudou.png
-const POTATO_ICON = `<img src="tudou.png" alt="毒马铃薯" class="potato-icon">`;
+            // ===== 语言数据 =====
+            const langText = {
+                zh: {
+                    loading: "检测中...",
+                    mainName: "大土豆",
+                    smallName: "小土豆",
+                    online: "在线",
+                    offline: "离线",
+                    mainOfflineWarn: "服务器可能正在被攻击",
+                    smallOfflineWarn: "可能是服主没开机（也有可能被打了）",
+                    player: "在线玩家：{now}/{max}，版本：{ver}",
+                    apiFail: "检测服务不可用",
+                    featureOffline: "离线支持",
+                    featureBedrock: "基岩版支持",
+                    featureCross: "跨版本支持",
+                    supportYes: "支持",
+                    supportNo: "不支持",
+                    supportUnknown: "未知",
+                    retry: "强制重新检测"
+                },
+                en: {
+                    loading: "Detecting...",
+                    mainName: "Main Server",
+                    smallName: "Small Server",
+                    online: "Online",
+                    offline: "Offline",
+                    mainOfflineWarn: "Server may be under attack",
+                    smallOfflineWarn: "Possibly the host has not turned on the server (may also be attacked)",
+                    player: "Players: {now}/{max}, Version: {ver}",
+                    apiFail: "Status service unavailable",
+                    featureOffline: "Offline Mode",
+                    featureBedrock: "Bedrock Support",
+                    featureCross: "Cross-version Support",
+                    supportYes: "Supported",
+                    supportNo: "Not Supported",
+                    supportUnknown: "Unknown",
+                    retry: "Force Retry"
+                }
+            };
 
-const langText = {
-    zh:{
-        loading:"检测中...",
-        mainName:"大土豆",
-        smallName:"小土豆",
-        online:"在线",
-        offline:"离线",
-        mainOfflineWarn:"服务器可能正在被攻击",
-        smallOfflineWarn:"可能是服主没开机（也有可能被打了）",
-        player:"在线玩家：{now}/{max}，版本：{ver}",
-        apiFail:"检测服务不可用",
-        featureOffline:"离线支持",
-        featureBedrock:"基岩版支持",
-        featureCross:"跨版本支持",
-        supportYes:"支持",
-        supportNo:"不支持",
-        supportUnknown:"未知",
-        retry:"强制重新检测"
-    },
-    en:{
-        loading:"Detecting...",
-        mainName:"Main Server",
-        smallName:"Small Server",
-        online:"Online",
-        offline:"Offline",
-        mainOfflineWarn:"Server may be under attack",
-        smallOfflineWarn:"Possibly the host has not turned on the server (may also be attacked)",
-        player:"Players: {now}/{max}, Version: {ver}",
-        apiFail:"Status service unavailable",
-        featureOffline:"Offline Mode",
-        featureBedrock:"Bedrock Support",
-        featureCross:"Cross-version Support",
-        supportYes:"Supported",
-        supportNo:"Not Supported",
-        supportUnknown:"Unknown",
-        retry:"Force Retry"
-    }
-};
-
-function getBrowserLang(){
-    const navLang = navigator.language || navigator.userLanguage;
-    return navLang.startsWith('zh') ? 'zh' : 'en';
-}
-
-let currentLang = getBrowserLang();
-
-function setLang(lang){
-    currentLang = lang;
-    document.documentElement.classList.toggle('lang-en', lang === 'en');
-    if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main', false);
-    if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small', false);
-}
-
-changeLangBtn.onclick = ()=> {
-    setLang(currentLang === 'zh' ? 'en' : 'zh');
-};
-
-function getCurrentLang(){
-    return currentLang;
-}
-
-function parseFeatures(motdClean) {
-    if (!motdClean) {
-        return { offline: null, bedrock: null, cross: null };
-    }
-    const text = motdClean.toLowerCase();
-    const offline = text.includes('离线') ? true : (text.includes('online') ? false : null);
-    const bedrock = text.includes('基岩版') ? (text.includes('不支持基岩版') || text.includes('不兼容基岩版') ? false : true) : null;
-    const cross = text.includes('跨版本') ? true : null;
-    if (text.includes('支持离线')) {
-        return { offline: true, bedrock, cross };
-    }
-    if (text.includes('不支持离线')) {
-        return { offline: false, bedrock, cross };
-    }
-    if (text.includes('支持基岩版') || text.includes('兼容基岩版')) {
-        return { offline, bedrock: true, cross };
-    }
-    if (text.includes('不支持基岩版') || text.includes('不兼容基岩版')) {
-        return { offline, bedrock: false, cross };
-    }
-    return { offline, bedrock, cross };
-}
-
-function getFeatureText(data) {
-    if (!data || !data.motd || !data.motd.clean) return '';
-    return data.motd.clean;
-}
-
-function updateBottomButton() {
-    refreshBtn.disabled = mainLoading || smallLoading;
-}
-
-function updateSingleServer(el, data, type, showRetry = false) {
-    if (!el) return;
-    const L = langText[getCurrentLang()];
-    const nameWithIcon = `${POTATO_ICON} ${type === 'main' ? L.mainName : L.smallName}`;
-    const offlineWarn = type === 'main' ? L.mainOfflineWarn : L.smallOfflineWarn;
-
-    const isLoading = (type === 'main') ? mainLoading : smallLoading;
-    if (isLoading) {
-        el.innerHTML = `
-            <div class="server-head-row">
-                <div>${nameWithIcon}</div>
-                ${showRetry ? `<button class="retry-btn" data-type="${type}">${L.retry}</button>` : ''}
-            </div>
-            <div class="server-info-line">
-                <div class="server-info-block">${L.loading}</div>
-            </div>
-        `;
-        if (showRetry) {
-            const btn = el.querySelector('.retry-btn');
-            if (btn) {
-                btn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    fetchSingleServer(type);
-                });
+            // ===== 主题切换 =====
+            let currentTheme = localStorage.getItem('theme') || 'dark';
+            function setTheme(theme) {
+                document.body.classList.toggle('light-mode', theme === 'light');
+                themeSwitch.classList.toggle('light', theme === 'light');
+                themeLabel.textContent = theme === 'light' ? '浅色' : '深色';
+                localStorage.setItem('theme', theme);
+                currentTheme = theme;
             }
-        }
-        return;
-    }
+            setTheme(currentTheme);
+            themeSwitch.addEventListener('click', function(e) {
+                e.stopPropagation();
+                setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            });
 
-    if (data === null) {
-        el.innerHTML = `
-            <div class="server-head-row">
-                <div>${nameWithIcon}</div>
-            </div>
-            <div class="server-info-line"><span class="warn-text">${L.apiFail}</span></div>
-        `;
-        return;
-    }
+            // ===== 语言切换 =====
+            let currentLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
+            function setLang(lang) {
+                currentLang = lang;
+                document.documentElement.classList.toggle('lang-en', lang === 'en');
+                langLabel.textContent = lang === 'zh' ? '中文' : 'English';
+                if (cacheMainData !== undefined) updateSingleServer(mainServerEl, cacheMainData, 'main', false);
+                if (cacheSmallData !== undefined) updateSingleServer(smallServerEl, cacheSmallData, 'small', false);
+            }
+            setLang(currentLang);
+            changeLangBtn.addEventListener('click', function() {
+                setLang(currentLang === 'zh' ? 'en' : 'zh');
+            });
 
-    if (data.online) {
-        const ver = data.version || "Unknown";
-        const fullMotd = getFeatureText(data);
-        const features = parseFeatures(fullMotd);
-        const featureLines = [];
-        const yes = L.supportYes, no = L.supportNo, unknown = L.supportUnknown;
-        const statusMap = (val) => val === true ? yes : (val === false ? no : unknown);
-        featureLines.push(`${L.featureOffline}：${statusMap(features.offline)}`);
-        featureLines.push(`${L.featureBedrock}：${statusMap(features.bedrock)}`);
-        featureLines.push(`${L.featureCross}：${statusMap(features.cross)}`);
+            function getCurrentLang() { return currentLang; }
 
-        el.innerHTML = `
-            <div class="server-head-row">
-                <div>${nameWithIcon}</div>
-            </div>
-            <div class="server-info-line">
-                <div class="server-info-block">
-                    <span class="dot-online">●</span>
-                    <span>${L.online}</span>
-                    <span>—</span>
-                    <span>${L.player.replace('{now}',data.players.online).replace('{max}',data.players.max).replace('{ver}',ver)}</span>
-                </div>
-            </div>
-            <div class="features-row">
-                ${featureLines.map(line => `<span>${line}</span>`).join('')}
-            </div>
-        `;
-    } else {
-        el.innerHTML = `
-            <div class="server-head-row">
-                <div>${nameWithIcon}</div>
-            </div>
-            <div class="server-info-line">
-                <div class="server-info-block">
-                    <span class="dot-offline">●</span>
-                    <span>${L.offline}</span>
-                </div>
-            </div>
-            <div class="server-warn-line warn-text">${offlineWarn}</div>
-        `;
-    }
-}
+            // ===== 核心功能函数 =====
+            const POTATO_ICON = `<img src="tudou.png" alt="毒马铃薯" class="potato-icon">`;
 
-async function fetchServer(apiUrl, controller, timeout = 60000) {
-    const timer = setTimeout(() => controller.abort(), timeout);
-    try {
-        const res = await fetch(apiUrl, { 
-            cache: "no-store", 
-            signal: controller.signal 
+            function parseFeatures(motdClean) {
+                if (!motdClean) return { offline: null, bedrock: null, cross: null };
+                const text = motdClean.toLowerCase();
+                let offline = text.includes('离线') ? true : (text.includes('online') ? false : null);
+                let bedrock = text.includes('基岩版') ? (text.includes('不支持基岩版') || text.includes('不兼容基岩版') ? false : true) : null;
+                let cross = text.includes('跨版本') ? true : null;
+                if (text.includes('支持离线')) return { offline: true, bedrock, cross };
+                if (text.includes('不支持离线')) return { offline: false, bedrock, cross };
+                if (text.includes('支持基岩版') || text.includes('兼容基岩版')) return { offline, bedrock: true, cross };
+                if (text.includes('不支持基岩版') || text.includes('不兼容基岩版')) return { offline, bedrock: false, cross };
+                return { offline, bedrock, cross };
+            }
+
+            function getFeatureText(data) {
+                if (!data || !data.motd || !data.motd.clean) return '';
+                return data.motd.clean;
+            }
+
+            function updateBottomButton() {
+                refreshBtn.disabled = mainLoading || smallLoading;
+            }
+
+            function updateSingleServer(el, data, type, showRetry = false) {
+                if (!el) return;
+                const L = langText[getCurrentLang()];
+                const nameWithIcon = `${POTATO_ICON} ${type === 'main' ? L.mainName : L.smallName}`;
+                const offlineWarn = type === 'main' ? L.mainOfflineWarn : L.smallOfflineWarn;
+
+                const isLoading = (type === 'main') ? mainLoading : smallLoading;
+                if (isLoading) {
+                    el.innerHTML = `
+                        <div class="server-head-row">
+                            <div>${nameWithIcon}</div>
+                            ${showRetry ? `<button class="retry-btn" data-type="${type}">${L.retry}</button>` : ''}
+                        </div>
+                        <div class="server-info-line">
+                            <div class="server-info-block">${L.loading}</div>
+                        </div>
+                    `;
+                    if (showRetry) {
+                        const btn = el.querySelector('.retry-btn');
+                        if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); fetchSingleServer(type); });
+                    }
+                    return;
+                }
+
+                if (data === null) {
+                    el.innerHTML = `
+                        <div class="server-head-row"><div>${nameWithIcon}</div></div>
+                        <div class="server-info-line"><span class="warn-text">${L.apiFail}</span></div>
+                    `;
+                    return;
+                }
+
+                if (data.online) {
+                    const ver = data.version || "Unknown";
+                    const fullMotd = getFeatureText(data);
+                    const features = parseFeatures(fullMotd);
+                    const yes = L.supportYes, no = L.supportNo, unknown = L.supportUnknown;
+                    const statusMap = (val) => val === true ? yes : (val === false ? no : unknown);
+                    const featureLines = [
+                        `${L.featureOffline}：${statusMap(features.offline)}`,
+                        `${L.featureBedrock}：${statusMap(features.bedrock)}`,
+                        `${L.featureCross}：${statusMap(features.cross)}`
+                    ];
+
+                    el.innerHTML = `
+                        <div class="server-head-row"><div>${nameWithIcon}</div></div>
+                        <div class="server-info-line">
+                            <div class="server-info-block">
+                                <span class="dot-online">●</span>
+                                <span>${L.online}</span>
+                                <span>—</span>
+                                <span>${L.player.replace('{now}',data.players.online).replace('{max}',data.players.max).replace('{ver}',ver)}</span>
+                            </div>
+                        </div>
+                        <div class="features-row">
+                            ${featureLines.map(line => `<span>${line}</span>`).join('')}
+                        </div>
+                    `;
+                } else {
+                    el.innerHTML = `
+                        <div class="server-head-row"><div>${nameWithIcon}</div></div>
+                        <div class="server-info-line">
+                            <div class="server-info-block">
+                                <span class="dot-offline">●</span>
+                                <span>${L.offline}</span>
+                            </div>
+                        </div>
+                        <div class="server-warn-line warn-text">${offlineWarn}</div>
+                    `;
+                }
+            }
+
+            // ===== 带超时的 fetch（超时 60 秒） =====
+            async function fetchServer(apiUrl, controller, timeout = 60000) {
+                const timer = setTimeout(() => controller.abort(), timeout);
+                try {
+                    const res = await fetch(apiUrl, { cache: "no-store", signal: controller.signal });
+                    clearTimeout(timer);
+                    return await res.json();
+                } catch (e) {
+                    clearTimeout(timer);
+                    console.warn('fetchServer error:', e);
+                    return null;
+                }
+            }
+
+            async function fetchSingleServer(type) {
+                const isMain = type === 'main';
+                const el = isMain ? mainServerEl : smallServerEl;
+                const apiUrl = isMain ? apiMain : apiSmall;
+                const setLoading = (val) => {
+                    if (isMain) mainLoading = val;
+                    else smallLoading = val;
+                    updateBottomButton();
+                };
+                const setData = (val) => {
+                    if (isMain) cacheMainData = val;
+                    else cacheSmallData = val;
+                };
+                const getController = () => isMain ? mainController : smallController;
+                const setController = (ctrl) => {
+                    if (isMain) mainController = ctrl;
+                    else smallController = ctrl;
+                };
+                const getTimer = () => isMain ? mainTimer : smallTimer;
+                const setTimer = (t) => {
+                    if (isMain) mainTimer = t;
+                    else smallTimer = t;
+                };
+
+                const oldCtrl = getController();
+                if (oldCtrl) try { oldCtrl.abort(); } catch(e) {}
+                const oldTimer = getTimer();
+                if (oldTimer) { clearTimeout(oldTimer); setTimer(null); }
+
+                const controller = new AbortController();
+                setController(controller);
+                setLoading(true);
+                updateSingleServer(el, null, type, false);
+
+                const timer = setTimeout(() => {
+                    if (isMain ? mainLoading : smallLoading) {
+                        updateSingleServer(el, null, type, true);
+                    }
+                }, 30000);
+                setTimer(timer);
+
+                const data = await fetchServer(apiUrl, controller);
+
+                const curTimer = getTimer();
+                if (curTimer) { clearTimeout(curTimer); setTimer(null); }
+                setLoading(false);
+                setData(data);
+                if (getController() === controller) setController(null);
+                updateSingleServer(el, data, type, false);
+            }
+
+            async function checkAllStatus() {
+                mainLoading = false;
+                smallLoading = false;
+                refreshBtn.disabled = true;
+                if (mainController) try { mainController.abort(); } catch(e) {}
+                if (smallController) try { smallController.abort(); } catch(e) {}
+                mainController = null; smallController = null;
+                if (mainTimer) { clearTimeout(mainTimer); mainTimer = null; }
+                if (smallTimer) { clearTimeout(smallTimer); smallTimer = null; }
+                fetchSingleServer('main');
+                fetchSingleServer('small');
+            }
+
+            requestAnimationFrame(() => {
+                checkAllStatus();
+            });
+
+            refreshBtn.addEventListener('click', checkAllStatus);
         });
-        clearTimeout(timer);
-        return await res.json();
-    } catch (e) {
-        clearTimeout(timer);
-        return null;
-    }
-}
-
-async function fetchSingleServer(type) {
-    const isMain = type === 'main';
-    const el = isMain ? mainServerEl : smallServerEl;
-    const apiUrl = isMain ? apiMain : apiSmall;
-    const setLoading = (val) => {
-        if (isMain) mainLoading = val;
-        else smallLoading = val;
-        updateBottomButton();
-    };
-    const setData = (val) => {
-        if (isMain) cacheMainData = val;
-        else cacheSmallData = val;
-    };
-    const getController = () => isMain ? mainController : smallController;
-    const setController = (ctrl) => {
-        if (isMain) mainController = ctrl;
-        else smallController = ctrl;
-    };
-    const getTimer = () => isMain ? mainTimer : smallTimer;
-    const setTimer = (t) => {
-        if (isMain) mainTimer = t;
-        else smallTimer = t;
-    };
-
-    const oldCtrl = getController();
-    if (oldCtrl) {
-        try { oldCtrl.abort(); } catch(e) {}
-    }
-    const oldTimer = getTimer();
-    if (oldTimer) {
-        clearTimeout(oldTimer);
-        setTimer(null);
-    }
-
-    const controller = new AbortController();
-    setController(controller);
-    setLoading(true);
-    updateSingleServer(el, null, type, false);
-
-    const timer = setTimeout(() => {
-        if (isMain ? mainLoading : smallLoading) {
-            updateSingleServer(el, null, type, true);
-        }
-    }, 30000);
-    setTimer(timer);
-
-    const data = await fetchServer(apiUrl, controller);
-
-    const curTimer = getTimer();
-    if (curTimer) {
-        clearTimeout(curTimer);
-        setTimer(null);
-    }
-    setLoading(false);
-    setData(data);
-    if (getController() === controller) {
-        setController(null);
-    }
-    updateSingleServer(el, data, type, false);
-}
-
-async function checkAllStatus(){
-    mainLoading = false;
-    smallLoading = false;
-    refreshBtn.disabled = true;
-
-    if (mainController) {
-        try { mainController.abort(); } catch(e) {}
-        mainController = null;
-    }
-    if (smallController) {
-        try { smallController.abort(); } catch(e) {}
-        smallController = null;
-    }
-    if (mainTimer) { clearTimeout(mainTimer); mainTimer = null; }
-    if (smallTimer) { clearTimeout(smallTimer); smallTimer = null; }
-
-    fetchSingleServer('main');
-    fetchSingleServer('small');
-}
-
-window.addEventListener('load', ()=>{
-    setLang(getBrowserLang());
-    requestAnimationFrame(()=>{
-        checkAllStatus();
-    });
-});
-
-refreshBtn.addEventListener('click', checkAllStatus);
-</script>
+    </script>
 </body>
 </html>
