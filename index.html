@@ -6,7 +6,7 @@
     <title>Tesseract - Minecraft Server</title>
     <link rel="icon" href="tudou.png" type="image/png">
     <script>
-        // 立即设置主题，避免闪烁
+        // 主题预设置，避免闪烁
         (function() {
             const stored = localStorage.getItem('theme');
             let theme = stored;
@@ -355,6 +355,7 @@
                 </button>
             </div>
         </div>
+        <!-- 以下卡片内容完整保留 -->
         <div class="card">
             <h2>
                 <span data-lang="zh">服务器介绍</span>
@@ -411,9 +412,11 @@
             </div>
         </div>
     </div>
+
+    <!-- 脚本放在 </body> 前，直接执行，不依赖任何事件 -->
     <script>
-        // 确保 DOM 加载完成后再执行
-        function init() {
+        (function() {
+            // 获取所有需要的元素
             const mainServerEl = document.getElementById('mainServerStatus');
             const smallServerEl = document.getElementById('smallServerStatus');
             const refreshBtn = document.getElementById('refreshStatusBtn');
@@ -422,15 +425,17 @@
             const themeSwitch = document.getElementById('themeSwitch');
             const themeLabel = document.getElementById('themeLabel');
 
-            // 检查元素是否存在
+            // 如果元素缺失，报错并停止
             if (!mainServerEl || !smallServerEl) {
-                console.error('关键元素未找到，请检查 HTML');
+                console.error('关键元素未找到，请检查 HTML 中的 id');
                 return;
             }
 
+            // ---------- 配置 ----------
             const apiMain = "https://api.mcstatus.io/v2/status/java/hmfree.tooo.top:20049";
             const apiSmall = "https://api.mcstatus.io/v2/status/java/play.simpfun.cn:28381";
 
+            // ---------- 状态变量 ----------
             let cacheMainData = null;
             let cacheSmallData = null;
             let mainLoading = false;
@@ -440,6 +445,7 @@
             let mainTimer = null;
             let smallTimer = null;
 
+            // ---------- 语言包 ----------
             const langText = {
                 zh: {
                     loading: "检测中...",
@@ -479,7 +485,7 @@
                 }
             };
 
-            // 主题控制
+            // ---------- 主题控制 ----------
             let currentTheme = localStorage.getItem('theme');
             let useSystemTheme = (currentTheme === null);
             function applyTheme(theme) {
@@ -496,7 +502,7 @@
                 currentTheme = theme;
                 applyTheme(theme);
             }
-            // 初始化
+            // 初始化主题
             if (currentTheme) {
                 applyTheme(currentTheme);
             } else {
@@ -504,6 +510,7 @@
                 applyTheme(sys);
                 currentTheme = sys;
             }
+            // 监听系统主题变化（仅在用户未手动设置时生效）
             const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
             darkMedia.addEventListener('change', (e) => {
                 if (useSystemTheme) {
@@ -512,6 +519,7 @@
                     currentTheme = newTheme;
                 }
             });
+            // 用户点击开关
             themeSwitch.addEventListener('click', function(e) {
                 e.stopPropagation();
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -519,15 +527,17 @@
                 useSystemTheme = false;
             });
 
-            // 语言切换
+            // ---------- 语言切换 ----------
             let currentLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
             function setLang(lang) {
                 currentLang = lang;
                 document.documentElement.classList.toggle('lang-en', lang === 'en');
                 langLabel.textContent = lang === 'zh' ? '中文' : 'English';
+                // 重新渲染已有数据或加载状态
                 if (cacheMainData !== undefined) {
                     updateSingleServer(mainServerEl, cacheMainData, 'main', false);
                 } else {
+                    // 如果数据未加载，强制显示加载状态
                     const wasLoading = mainLoading;
                     mainLoading = true;
                     updateSingleServer(mainServerEl, null, 'main', false);
@@ -548,8 +558,10 @@
             });
             function getCurrentLang() { return currentLang; }
 
+            // ---------- 图标 ----------
             const POTATO_ICON = `<img src="tudou.png" alt="毒马铃薯" class="potato-icon">`;
 
+            // ---------- 辅助函数 ----------
             function parseFeatures(motdClean) {
                 if (!motdClean) return { offline: null, bedrock: null, cross: null };
                 const text = motdClean.toLowerCase();
@@ -569,13 +581,17 @@
             function updateBottomButton() {
                 refreshBtn.disabled = mainLoading || smallLoading;
             }
+
+            // ---------- 核心渲染函数 ----------
             function updateSingleServer(el, data, type, showRetry = false) {
                 if (!el) return;
                 const L = langText[getCurrentLang()];
                 const nameWithIcon = `${POTATO_ICON} ${type === 'main' ? L.mainName : L.smallName}`;
                 const offlineWarn = type === 'main' ? L.mainOfflineWarn : L.smallOfflineWarn;
                 const isLoading = (type === 'main') ? mainLoading : smallLoading;
+
                 if (isLoading) {
+                    // 加载状态
                     el.innerHTML = `
                         <div class="server-head-row">
                             <div>${nameWithIcon}</div>
@@ -591,6 +607,7 @@
                     }
                     return;
                 }
+
                 if (data === null) {
                     el.innerHTML = `
                         <div class="server-head-row"><div>${nameWithIcon}</div></div>
@@ -598,6 +615,7 @@
                     `;
                     return;
                 }
+
                 if (data.online) {
                     const ver = data.version || "Unknown";
                     const fullMotd = getFeatureText(data);
@@ -637,6 +655,7 @@
                 }
             }
 
+            // ---------- 网络请求 ----------
             async function fetchServer(apiUrl, controller, timeout = 60000) {
                 const timer = setTimeout(() => controller.abort(), timeout);
                 try {
@@ -650,6 +669,7 @@
                 }
             }
 
+            // ---------- 单独检测一个服务器 ----------
             async function fetchSingleServer(type) {
                 const isMain = type === 'main';
                 const el = isMain ? mainServerEl : smallServerEl;
@@ -673,55 +693,69 @@
                     if (isMain) mainTimer = t;
                     else smallTimer = t;
                 };
+
+                // 取消旧请求
                 const oldCtrl = getController();
                 if (oldCtrl) try { oldCtrl.abort(); } catch(e) {}
                 const oldTimer = getTimer();
                 if (oldTimer) { clearTimeout(oldTimer); setTimer(null); }
+
                 const controller = new AbortController();
                 setController(controller);
                 setLoading(true);
+                // 立即显示加载状态
                 updateSingleServer(el, null, type, false);
+
+                // 30秒后显示重试按钮
                 const timer = setTimeout(() => {
                     if (isMain ? mainLoading : smallLoading) {
                         updateSingleServer(el, null, type, true);
                     }
                 }, 30000);
                 setTimer(timer);
+
                 const data = await fetchServer(apiUrl, controller);
+
                 const curTimer = getTimer();
                 if (curTimer) { clearTimeout(curTimer); setTimer(null); }
                 setLoading(false);
                 setData(data);
                 if (getController() === controller) setController(null);
+                // 更新最终状态
                 updateSingleServer(el, data, type, false);
             }
 
+            // ---------- 同时检测两个服务器 ----------
             async function checkAllStatus() {
+                // 取消所有旧请求
                 if (mainController) try { mainController.abort(); } catch(e) {}
                 if (smallController) try { smallController.abort(); } catch(e) {}
                 mainController = null; smallController = null;
                 if (mainTimer) { clearTimeout(mainTimer); mainTimer = null; }
                 if (smallTimer) { clearTimeout(smallTimer); smallTimer = null; }
+
+                // 设置为加载状态
                 mainLoading = true;
                 smallLoading = true;
                 updateBottomButton();
+
+                // 立即显示加载状态（不显示重试按钮）
                 updateSingleServer(mainServerEl, null, 'main', false);
                 updateSingleServer(smallServerEl, null, 'small', false);
+
+                // 发起请求
                 fetchSingleServer('main');
                 fetchSingleServer('small');
             }
 
-            // 立即执行检测
+            // ---------- 启动检测 ----------
             checkAllStatus();
             refreshBtn.addEventListener('click', checkAllStatus);
-        }
 
-        // 确保 DOM 加载完成后再初始化
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
+            // 额外调试：输出元素是否存在
+            console.log('mainServerEl:', mainServerEl);
+            console.log('smallServerEl:', smallServerEl);
+        })();
     </script>
 </body>
 </html>
