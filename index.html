@@ -199,7 +199,6 @@ body{
     <button class="lang-btn" id="toggleLang">Switch to English</button>
   </div>
 
-  <!-- 标题独立卡片，全部居中 -->
   <div class="card card-center">
     <h1 id="title">Tesseract MC服务器</h1>
     <p id="intro" style="margin:8px 0 12px;">欢迎来到Tesseract服务器，请加入QQ审核群进入服务器</p>
@@ -216,7 +215,6 @@ body{
     </ul>
   </div>
 
-  <!-- 热知识独立卡片，火焰emoji 🔥 -->
   <div class="card">
     <div class="hot-tip" id="hotTip">🔥 热知识：服务器可以用矿透</div>
   </div>
@@ -299,7 +297,6 @@ const i18n = {
     next:"下一页",
     players:"玩家",
     version:"版本",
-    max:"最大",
     bedrockTip:"兼容基岩版登录"
   },
   en:{
@@ -332,7 +329,6 @@ const i18n = {
     next:"Next",
     players:"players",
     version:"Version",
-    max:"Max",
     bedrockTip:"Bedrock Edition compatible"
   }
 };
@@ -343,6 +339,20 @@ let serverData = {
   small:{status:"loading",payload:null}
 };
 const PAGE_SIZE = 20;
+
+function getVersionText(payload){
+    let ver = "";
+    if (payload?.version?.name_clean) {
+        ver = payload.version.name_clean;
+    } else if (payload?.version?.name_raw) {
+        ver = payload.version.name_raw;
+    } else if (payload?.software) {
+        ver = payload.software;
+    } else {
+        ver = "未知";
+    }
+    return ver;
+}
 
 function applyLang(){
   const t = i18n[currentLang];
@@ -390,7 +400,7 @@ function renderServerUi(){
     mainDot.className = "status-dot dot-green";
     mainStatusText.innerText = t.online;
     const pl = m.payload.players;
-    const ver = m.payload.version?.name_clean||"-";
+    const ver = getVersionText(m.payload);
     mainInfo.innerHTML = `<div style="margin:4px 0;">${t.players}: ${pl.online}/${pl.max}｜${t.version}: ${ver}</div>`;
   }else{
     mainDot.className = "status-dot dot-red";
@@ -410,7 +420,7 @@ function renderServerUi(){
     smallDot.className = "status-dot dot-green";
     smallStatusText.innerText = t.online;
     const pl = s.payload.players;
-    const ver = s.payload.version?.name_clean||"-";
+    const ver = getVersionText(s.payload);
     smallInfo.innerHTML = `<div style="margin:4px 0;">${t.players}: ${pl.online}/${pl.max}｜${t.version}: ${ver}</div>`;
   }else{
     smallDot.className = "status-dot dot-red";
