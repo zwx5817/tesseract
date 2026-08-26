@@ -5,14 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tesseract - Minecraft Server</title>
     <link rel="icon" href="tudou.png" type="image/png">
+    <!-- 主题预设置：直接读取系统主题，避免闪烁 -->
     <script>
         (function() {
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (!isDark) document.documentElement.classList.add('light-mode');
+            if (!isDark) {
+                document.documentElement.classList.add('light-mode');
+            }
             window.__systemTheme = isDark ? 'dark' : 'light';
         })();
     </script>
     <style>
+        /* ===== CSS 变量 ===== */
         :root {
             --bg-body: #000000;
             --bg-card: #111111;
@@ -45,6 +49,8 @@
             --switch-dot: #fff;
             --switch-active: #4cd964;
         }
+
+        /* ===== 基础样式 ===== */
         * { margin:0; padding:0; box-sizing:border-box; }
         html { scroll-behavior:smooth; }
         body {
@@ -54,6 +60,8 @@
             min-height: 100vh;
             transition: background-color 0.3s, color 0.3s;
         }
+
+        /* ===== 右上角控制栏 ===== */
         .top-bar {
             position: fixed;
             top: 16px;
@@ -87,6 +95,7 @@
             border-color: rgba(255,255,255,0.3);
         }
         .glass-btn:active { transform: scale(0.97); }
+
         .theme-switch {
             display: flex;
             align-items: center;
@@ -127,6 +136,8 @@
             color: var(--btn-text);
             min-width: 32px;
         }
+
+        /* ===== 页面内容 ===== */
         .container {
             max-width: 850px;
             margin: 0 auto;
@@ -177,6 +188,7 @@
             color: var(--text-primary);
             margin-bottom: 12px;
         }
+
         .qq-group-box {
             background-color: var(--bg-card);
             padding: clamp(20px,4vw,28px);
@@ -201,6 +213,7 @@
             transition: transform 0.25s ease;
         }
         .qq-link-btn:hover { transform: translateY(-6px); }
+
         .hot-tip {
             background-color: rgba(255, 150, 0, 0.15);
             border: 1px solid rgba(255,150,0,0.3);
@@ -209,6 +222,7 @@
             margin-top: 15px;
         }
         .hot-tip p { color: #ffc873; font-weight:500; margin:0; }
+
         .footer {
             text-align: center;
             margin-top: 50px;
@@ -222,10 +236,12 @@
             color: var(--text-muted);
             line-height:1.8;
         }
+
         @keyframes fadeIn {
             from { opacity:0; transform:translateY(20px); }
             to { opacity:1; transform:translateY(0); }
         }
+
         @media (max-width: 480px) {
             .header { padding:30px 12px; }
             .top-bar { top:8px; right:8px; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
@@ -235,6 +251,7 @@
             .theme-switch .switch-thumb { width:14px; height:14px; top:3px; left:3px; }
             html.light-mode .theme-switch .switch-thumb { left:19px; }
         }
+
         [data-lang="zh"] { display:block; }
         [data-lang="en"] { display:none; }
         html.lang-en [data-lang="zh"] { display:none; }
@@ -242,14 +259,19 @@
     </style>
 </head>
 <body>
+    <!-- 右上角控制栏 -->
     <div class="top-bar">
-        <button class="glass-btn" id="changeLangBtn"><span>🌐</span> <span id="langLabel">中文</span></button>
+        <button class="glass-btn" id="changeLangBtn">
+            <span>🌐</span> <span id="langLabel">中文</span>
+        </button>
         <div class="theme-switch" id="themeSwitch">
             <span class="switch-label" id="themeLabel">深色</span>
             <div class="switch-track"><div class="switch-thumb"></div></div>
         </div>
     </div>
+
     <div class="container">
+        <!-- 头部 -->
         <div class="header">
             <h1>Tesseract</h1>
             <div class="subtitle">
@@ -257,8 +279,13 @@
                 <span data-lang="en">Minecraft Server</span>
             </div>
         </div>
+
+        <!-- 服务器介绍 -->
         <div class="card">
-            <h2><span data-lang="zh">服务器介绍</span><span data-lang="en">About Server</span></h2>
+            <h2>
+                <span data-lang="zh">服务器介绍</span>
+                <span data-lang="en">About Server</span>
+            </h2>
             <p data-lang="zh">欢迎来到 Tesseract Minecraft服务器！</p>
             <p data-lang="en">Welcome to Tesseract Minecraft Server!</p>
             <p data-lang="zh">这里是一个友好的Minecraft游戏社区，在这里你可以自由建造、生电研究，和小伙伴一同游玩。</p>
@@ -270,8 +297,13 @@
                 <p data-lang="en">🔥 Tip: X‑ray is allowed on the server</p>
             </div>
         </div>
+
+        <!-- QQ群 -->
         <div class="card qq-group-box">
-            <h2><span data-lang="zh">如何加入服务器</span><span data-lang="en">How To Join</span></h2>
+            <h2>
+                <span data-lang="zh">如何加入服务器</span>
+                <span data-lang="en">How To Join</span>
+            </h2>
             <p data-lang="zh">请加入我们的QQ审核群完成玩家审核</p>
             <p data-lang="en">Join our QQ group for player verification</p>
             <div class="qq-num">
@@ -286,8 +318,13 @@
                 <span data-lang="en">Open QQ Group ↗</span>
             </a>
         </div>
+
+        <!-- 规则 -->
         <div class="card">
-            <h2><span data-lang="zh">玩家须知</span><span data-lang="en">Rules</span></h2>
+            <h2>
+                <span data-lang="zh">玩家须知</span>
+                <span data-lang="en">Rules</span>
+            </h2>
             <p data-lang="zh">❶ 入群后请遵守群规与服务器规则，禁止恶意破坏他人建筑。</p>
             <p data-lang="en">❶ Follow group and server rules. Griefing other people's builds is forbidden.</p>
             <p data-lang="zh">❷ 所有玩家必须经过审核，未审核账号无法连接服务器。</p>
@@ -295,14 +332,18 @@
             <p data-lang="zh">❸ 若无法加入群聊，请核对QQ群号码。</p>
             <p data-lang="en">❸ If you cannot join group, double‑check group number.</p>
         </div>
+
+        <!-- 底部 -->
         <div class="footer">Tesseract Minecraft Server © 2026</div>
         <div class="extra-footer">
-            <div>Powered by Cloudflare Pages</div>
-            <div><span data-lang="zh">由zwx5817开发</span><span data-lang="en">Developed by zwx5817</span></div>
+            <div>Powered by Cloudflare</div>
+            <div>由 zwx5817 开发</div>
         </div>
     </div>
+
     <script>
         (function() {
+            // ===== 语言切换 =====
             const changeLangBtn = document.getElementById('changeLangBtn');
             const langLabel = document.getElementById('langLabel');
             const themeSwitch = document.getElementById('themeSwitch');
@@ -319,9 +360,10 @@
                 setLang(currentLang === 'zh' ? 'en' : 'zh');
             });
 
-            // 主题：完全跟随系统，不保存
+            // ===== 主题控制（完全跟随系统，不保存） =====
             let currentTheme = window.__systemTheme || 'dark';
             let userOverride = false;
+
             function applyTheme(theme) {
                 const isLight = theme === 'light';
                 document.documentElement.classList.toggle('light-mode', isLight);
@@ -329,18 +371,25 @@
                 themeLabel.textContent = isLight ? '浅色' : '深色';
                 currentTheme = theme;
             }
+
             const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
             function systemThemeChanged(e) {
                 if (userOverride) return;
-                applyTheme(e.matches ? 'dark' : 'light');
+                const newTheme = e.matches ? 'dark' : 'light';
+                applyTheme(newTheme);
             }
             darkMedia.addEventListener('change', systemThemeChanged);
+
             themeSwitch.addEventListener('click', function(e) {
                 e.stopPropagation();
-                applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                applyTheme(newTheme);
                 userOverride = true;
             });
-            applyTheme(window.__systemTheme || (darkMedia.matches ? 'dark' : 'light'));
+
+            // 初始化
+            const initialTheme = window.__systemTheme || (darkMedia.matches ? 'dark' : 'light');
+            applyTheme(initialTheme);
             userOverride = false;
         })();
     </script>
