@@ -37,17 +37,17 @@
             --bg-card: #ffffff;
             --text-primary: #222222;
             --text-secondary: #555555;
-            --text-muted: #888888;
+            --text-muted: #444444;
             --border-color: rgba(0,0,0,0.08);
             --shadow-color: rgba(0,0,0,0.15);
-            --glass-bg: rgba(255,255,255,0.3);
-            --glass-border: rgba(255,255,255,0.45);
+            --glass-bg: rgba(255,255,255,0.35);
+            --glass-border: rgba(255,255,255,0.5);
             --glass-shadow: 0 4px 20px rgba(0,0,0,0.1);
             --btn-text: #222;
             --switch-bg: #ddd;
             --switch-dot: #fff;
             --switch-active: #4cd964;
-            --card-bg-rgba: rgba(255,255,255,0.55);
+            --card-bg-rgba: rgba(255,255,255,0.7);
         }
 
         html { background-color: var(--bg-body); }
@@ -89,7 +89,7 @@
             transition: background 0.3s;
         }
         html.light-mode #bgOverlay {
-            background: rgba(255,255,255,0.25);
+            background: transparent;
         }
 
         .top-bar {
@@ -122,7 +122,7 @@
         .glass-btn:hover {
             transform: translateY(-2px) scale(1.02);
             background: var(--glass-bg);
-            border-color: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.4);
         }
         .glass-btn:active { transform: scale(0.97); }
 
@@ -402,7 +402,6 @@
             if (isMobile) {
                 const img = new Image();
                 img.onload = function() {
-                    // 读取 bgLayer 的实际像素尺寸（由 CSS 的 100lvh 决定）
                     const W = bgLayer.clientWidth;
                     const H = bgLayer.clientHeight;
                     const w = img.naturalWidth;
