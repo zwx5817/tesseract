@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tesseract - Minecraft Server</title>
+    <title>Tesseract - 服务器状态</title>
     <link rel="icon" href="tudou.png" type="image/png">
     <script>
         (function() {
@@ -90,6 +90,40 @@
         }
         html.light-mode #bgOverlay {
             background: transparent;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 16px;
+            z-index: 99;
+            padding: 8px 14px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--btn-text);
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            background: var(--glass-bg);
+            border-color: rgba(255,255,255,0.4);
+        }
+        .back-btn:active { transform: scale(0.97); }
+        .back-icon {
+            font-size: 20px;
+            line-height: 1;
         }
 
         .top-bar {
@@ -217,48 +251,37 @@
             margin-bottom: 16px;
             font-size: clamp(20px,4vw,26px);
         }
-        p {
-            line-height: 1.8;
-            font-size: clamp(15px,2.5vw,16px);
-            color: var(--text-primary);
-            margin-bottom: 12px;
-        }
 
-        .qq-group-box {
-            background-color: var(--card-bg-rgba);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: clamp(20px,4vw,28px);
-            border-radius: 10px;
-            text-align: center;
-            border: 1px solid var(--border-color);
+        .server-item {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
-        .qq-num {
-            font-size: clamp(22px,5vw,30px);
-            color: #54a0ff;
-            font-weight: bold;
-            margin:14px 0;
-            text-shadow: 0 0 14px rgba(84,160,255,0.4);
+        .server-item:last-child { border-bottom: none; margin-bottom:0; padding-bottom:0; }
+        .server-head-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
         }
-        .qq-link-btn {
-            display: inline-block;
-            padding: 12px 28px;
-            background-color: #54a0ff;
-            color: #ffffff;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: transform 0.25s ease;
+        .server-info-line {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: 15px;
+            color: var(--text-secondary);
         }
-        .qq-link-btn:hover { transform: translateY(-6px); }
-
-        .hot-tip {
-            background-color: rgba(255, 150, 0, 0.15);
-            border: 1px solid rgba(255,150,0,0.3);
-            padding: 16px;
-            border-radius: 10px;
-            margin-top: 15px;
+        .server-info-block {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
         }
-        .hot-tip p { color: #ffc873; font-weight:500; margin:0; }
+        .dot-online { color:#28c740; }
+        .dot-offline { color:#e53935; }
+        .warn-text { color:#ff6b6b; }
 
         .footer {
             text-align: center;
@@ -273,6 +296,24 @@
             color: var(--text-muted);
             line-height:1.8;
         }
+        #refreshStatusBtn {
+            padding:10px 22px;
+            background:#3070d8;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-size:16px;
+        }
+        #refreshStatusBtn:disabled { background:#444; cursor:not-allowed; }
+
+        .potato-icon {
+            width: 26px;
+            height: 26px;
+            image-rendering: pixelated;
+            vertical-align: middle;
+            margin-right: 4px;
+        }
 
         @keyframes fadeIn {
             from { opacity:0; transform:translateY(20px); }
@@ -281,7 +322,9 @@
 
         @media (max-width: 480px) {
             .header { padding:30px 12px; }
-            .top-bar { top: 12px; right: 8px; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+            .back-btn { top:12px; left:8px; padding:6px 10px; font-size:13px; }
+            .back-icon { font-size:16px; }
+            .top-bar { top:12px; right:8px; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
             .glass-btn { padding:6px 10px; font-size:13px; }
             .theme-switch { padding:4px 8px; }
             .theme-switch .switch-track { width:36px; height:20px; }
@@ -299,6 +342,11 @@
     <div id="bgLayer"></div>
     <div id="bgOverlay"></div>
 
+    <a class="back-btn" href="https://tesseract.kdns.fr">
+        <span class="back-icon">←</span>
+        <span id="backLabel">返回</span>
+    </a>
+
     <div class="top-bar">
         <button class="glass-btn" id="changeLangBtn">
             <span>🌐</span> <span id="langLabel">中文</span>
@@ -313,74 +361,24 @@
         <div class="header">
             <h1>Tesseract</h1>
             <div class="subtitle">
-                <span data-lang="zh">Minecraft 服务器</span>
-                <span data-lang="en">Minecraft Server</span>
+                <span data-lang="zh">服务器状态</span>
+                <span data-lang="en">Server Status</span>
             </div>
         </div>
 
         <div class="card">
             <h2>
-                <span data-lang="zh">服务器介绍</span>
-                <span data-lang="en">About Server</span>
+                <span data-lang="zh">服务器运行状态</span>
+                <span data-lang="en">Server Status</span>
             </h2>
-            <p data-lang="zh">欢迎来到 Tesseract Minecraft服务器！</p>
-            <p data-lang="en">Welcome to Tesseract Minecraft Server!</p>
-            <p data-lang="zh">这里是一个友好的Minecraft游戏社区，在这里你可以自由建造、生电研究，和小伙伴一同游玩。</p>
-            <p data-lang="en">This is a friendly Minecraft community. You can build freely, study redstone contraptions and play with friends.</p>
-            <p data-lang="zh">本服务器实行入群审核制度，想要进入服务器游玩，必须加入QQ审核群完成审核，审核通过后才可进入游戏。</p>
-            <p data-lang="en">This server requires QQ‑group verification. You must join the QQ group and pass review before joining.</p>
-            <div class="hot-tip">
-                <p data-lang="zh">🔥 热知识：服务器可以用矿透</p>
-                <p data-lang="en">🔥 Tip: X‑ray is allowed on the server</p>
+            <div class="server-item"><div id="mainServerStatus"></div></div>
+            <div class="server-item"><div id="smallServerStatus"></div></div>
+            <div style="text-align:center;margin-top:12px;">
+                <button id="refreshStatusBtn">
+                    <span data-lang="zh">重新检测状态</span>
+                    <span data-lang="en">Refresh Status</span>
+                </button>
             </div>
-        </div>
-
-        <div class="card">
-            <h2>
-                <span data-lang="zh">在线检测</span>
-                <span data-lang="en">Online Status</span>
-            </h2>
-            <p data-lang="zh">什么你进不去服务器快来看一下我们的至尊烤土豆有没有在线吧？</p>
-            <p data-lang="en">If you can't get into the server, please click the button below to check if the server is online.</p>
-            <div style="text-align:center;margin-top:16px;">
-                <a class="qq-link-btn" href="https://online-test.tesseract.kdns.fr" target="_blank">
-                    <span data-lang="zh">戳我去看看烤土豆</span>
-                    <span data-lang="en">Click me to check if the server is online</span>
-                </a>
-            </div>
-        </div>
-
-        <div class="card qq-group-box">
-            <h2>
-                <span data-lang="zh">如何加入服务器</span>
-                <span data-lang="en">How To Join</span>
-            </h2>
-            <p data-lang="zh">请加入我们的QQ审核群完成玩家审核</p>
-            <p data-lang="en">Join our QQ group for player verification</p>
-            <div class="qq-num">
-                <span data-lang="zh">QQ审核群群号：</span>
-                <span data-lang="en">QQ Group ID:</span>
-                421642410
-            </div>
-            <p data-lang="zh">加入群聊后，请阅读群公告完成审核流程，审核通过即可获取服务器相关信息。</p>
-            <p data-lang="en">Read group announcement after joining. You will get server information after verification.</p>
-            <a class="qq-link-btn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank">
-                <span data-lang="zh">戳我直达QQ群 ↗</span>
-                <span data-lang="en">Open QQ Group ↗</span>
-            </a>
-        </div>
-
-        <div class="card">
-            <h2>
-                <span data-lang="zh">玩家须知</span>
-                <span data-lang="en">Rules</span>
-            </h2>
-            <p data-lang="zh">❶ 入群后请遵守群规与服务器规则，禁止恶意破坏他人建筑。</p>
-            <p data-lang="en">❶ Follow group and server rules. Griefing other people's builds is forbidden.</p>
-            <p data-lang="zh">❷ 所有玩家必须经过审核，未审核账号无法连接服务器。</p>
-            <p data-lang="en">❷ All players need verification. Unverified accounts cannot connect.</p>
-            <p data-lang="zh">❸ 若无法加入群聊，请核对QQ群号码。</p>
-            <p data-lang="en">❸ If you cannot join group, double‑check group number.</p>
         </div>
 
         <div class="footer">Tesseract Minecraft Server © 2026</div>
@@ -431,23 +429,53 @@
             }
         })();
 
-        // ===== 语言与主题 =====
+        // ===== 检测逻辑 + 主题 + 语言 =====
         (function() {
+            const mainEl = document.getElementById('mainServerStatus');
+            const smallEl = document.getElementById('smallServerStatus');
+            const refreshBtn = document.getElementById('refreshStatusBtn');
             const changeLangBtn = document.getElementById('changeLangBtn');
             const langLabel = document.getElementById('langLabel');
             const themeSwitch = document.getElementById('themeSwitch');
             const themeLabel = document.getElementById('themeLabel');
+            const backLabel = document.getElementById('backLabel');
+
+            if (!mainEl || !smallEl) {
+                console.error('关键元素未找到');
+                return;
+            }
+
+            const API_MAIN = 'https://api.mcstatus.io/v2/status/java/hmfree.tooo.top:20049';
+            const API_SMALL = 'https://api.mcstatus.io/v2/status/java/play.simpfun.cn:28381';
+
+            const langText = {
+                zh: {
+                    loading: '检测中...',
+                    mainName: '大土豆',
+                    smallName: '小土豆',
+                    online: '在线',
+                    offline: '离线',
+                    mainOfflineWarn: '服务器可能正在被攻击',
+                    smallOfflineWarn: '可能是服主没开机（也有可能被打了）',
+                    player: '在线玩家：{now}/{max}，版本：{ver}',
+                    apiFail: '检测服务不可用',
+                    back: '返回'
+                },
+                en: {
+                    loading: 'Detecting...',
+                    mainName: 'Main Server',
+                    smallName: 'Small Server',
+                    online: 'Online',
+                    offline: 'Offline',
+                    mainOfflineWarn: 'Server may be under attack',
+                    smallOfflineWarn: 'Possibly the host has not turned on the server (may also be attacked)',
+                    player: 'Players: {now}/{max}, Version: {ver}',
+                    apiFail: 'Status service unavailable',
+                    back: 'Back'
+                }
+            };
 
             let currentLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
-            function setLang(lang) {
-                currentLang = lang;
-                document.documentElement.classList.toggle('lang-en', lang === 'en');
-                langLabel.textContent = lang === 'zh' ? '中文' : 'English';
-            }
-            setLang(currentLang);
-            changeLangBtn.addEventListener('click', function() {
-                setLang(currentLang === 'zh' ? 'en' : 'zh');
-            });
 
             let currentTheme = window.__systemTheme || 'dark';
             let userOverride = false;
@@ -474,6 +502,128 @@
             const initialTheme = window.__systemTheme || (darkMedia.matches ? 'dark' : 'light');
             applyTheme(initialTheme);
             userOverride = false;
+
+            function setLang(lang) {
+                currentLang = lang;
+                document.documentElement.classList.toggle('lang-en', lang === 'en');
+                langLabel.textContent = lang === 'zh' ? '中文' : 'English';
+                backLabel.textContent = lang === 'zh' ? '返回' : 'Back';
+                renderAll();
+            }
+            changeLangBtn.addEventListener('click', function() {
+                setLang(currentLang === 'zh' ? 'en' : 'zh');
+            });
+
+            function getVersionString(ver) {
+                if (!ver) return 'Unknown';
+                if (typeof ver === 'string') return ver;
+                if (typeof ver === 'object') {
+                    return ver.name_clean || ver.name_raw || 'Unknown';
+                }
+                return String(ver);
+            }
+
+            function renderServer(el, data, nameKey, offlineWarnKey) {
+                const L = langText[currentLang];
+                const name = L[nameKey];
+                const icon = `<img src="tudou.png" alt="毒马铃薯" class="potato-icon">`;
+                const nameWithIcon = `${icon} ${name}`;
+
+                if (data === null) {
+                    el.innerHTML = `
+                        <div class="server-head-row"><div>${nameWithIcon}</div></div>
+                        <div class="server-info-line"><span class="warn-text">${L.apiFail}</span></div>
+                    `;
+                    return;
+                }
+                if (data.online) {
+                    const ver = getVersionString(data.version);
+                    const playerText = L.player
+                        .replace('{now}', data.players.online)
+                        .replace('{max}', data.players.max)
+                        .replace('{ver}', ver);
+                    el.innerHTML = `
+                        <div class="server-head-row"><div>${nameWithIcon}</div></div>
+                        <div class="server-info-line">
+                            <div class="server-info-block">
+                                <span class="dot-online">●</span>
+                                <span>${L.online}</span>
+                                <span>—</span>
+                                <span>${playerText}</span>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    el.innerHTML = `
+                        <div class="server-head-row"><div>${nameWithIcon}</div></div>
+                        <div class="server-info-line">
+                            <div class="server-info-block">
+                                <span class="dot-offline">●</span>
+                                <span>${L.offline}</span>
+                            </div>
+                        </div>
+                        <div class="server-warn-line warn-text">${L[offlineWarnKey]}</div>
+                    `;
+                }
+            }
+
+            function showLoading() {
+                const L = langText[currentLang];
+                const icon = `<img src="tudou.png" alt="毒马铃薯" class="potato-icon">`;
+                mainEl.innerHTML = `
+                    <div class="server-head-row"><div>${icon} ${L.mainName}</div></div>
+                    <div class="server-info-line"><div class="server-info-block">${L.loading}</div></div>
+                `;
+                smallEl.innerHTML = `
+                    <div class="server-head-row"><div>${icon} ${L.smallName}</div></div>
+                    <div class="server-info-line"><div class="server-info-block">${L.loading}</div></div>
+                `;
+            }
+
+            let cacheMain = null;
+            let cacheSmall = null;
+            function renderAll() {
+                if (cacheMain === null && cacheSmall === null) {
+                    showLoading();
+                    return;
+                }
+                if (cacheMain !== null) renderServer(mainEl, cacheMain, 'mainName', 'mainOfflineWarn');
+                else showLoading();
+                if (cacheSmall !== null) renderServer(smallEl, cacheSmall, 'smallName', 'smallOfflineWarn');
+                else showLoading();
+            }
+
+            async function fetchWithTimeout(url, timeout = 10000) {
+                const controller = new AbortController();
+                const timer = setTimeout(() => controller.abort(), timeout);
+                try {
+                    const res = await fetch(url, { signal: controller.signal, cache: 'no-store' });
+                    clearTimeout(timer);
+                    return await res.json();
+                } catch (e) {
+                    clearTimeout(timer);
+                    return null;
+                }
+            }
+
+            async function checkAll() {
+                showLoading();
+                refreshBtn.disabled = true;
+
+                const [mainData, smallData] = await Promise.all([
+                    fetchWithTimeout(API_MAIN),
+                    fetchWithTimeout(API_SMALL)
+                ]);
+
+                cacheMain = mainData;
+                cacheSmall = smallData;
+                renderAll();
+                refreshBtn.disabled = false;
+            }
+
+            checkAll();
+            refreshBtn.addEventListener('click', checkAll);
+            setLang(currentLang);
         })();
     </script>
 </body>
