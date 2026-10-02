@@ -224,6 +224,37 @@
             margin-bottom: 12px;
         }
 
+        /* B站视频框 */
+        .video-frame {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #000;
+            margin-top: 8px;
+        }
+        .video-frame iframe {
+            width: 100%;
+            height: 100%;
+            display: block;
+            border: none;
+        }
+        .video-credit {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 12px;
+            margin-bottom: 0;
+            text-align: center;
+        }
+        .video-credit a {
+            color: #54a0ff;
+            text-decoration: none;
+        }
+        .video-credit a:hover {
+            text-decoration: underline;
+        }
+
         .qq-group-box {
             background-color: var(--card-bg-rgba);
             backdrop-filter: blur(10px);
@@ -318,6 +349,7 @@
             </div>
         </div>
 
+        <!-- 服务器介绍 -->
         <div class="card">
             <h2>
                 <span data-lang="zh">服务器介绍</span>
@@ -335,6 +367,24 @@
             </div>
         </div>
 
+        <!-- 实机游玩视频 -->
+        <div class="card">
+            <h2>
+                <span data-lang="zh">实机游玩</span>
+                <span data-lang="en">Gameplay</span>
+            </h2>
+            <p data-lang="zh">来看看我们在服务器里的日常吧！这是一段真实的游戏录像，希望能让你感受到 Tesseract 的乐趣。</p>
+            <p data-lang="en">Take a look at our daily life on the server! This is a real gameplay recording — hope it gives you a taste of what Tesseract is like.</p>
+            <div class="video-frame">
+                <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=117370383242626&bvid=BV1mcam6fEZf&cid=42393012230&p=1&high_quality=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+            </div>
+            <p class="video-credit">
+                <span data-lang="zh">拍摄者：.Yezc1112 <a href="https://b23.tv/r2F9IoW" target="_blank">[去他的B站主页]</a></span>
+                <span data-lang="en">Recorded by .Yezc1112 <a href="https://b23.tv/r2F9IoW" target="_blank">[Visit his Bilibili]</a></span>
+            </p>
+        </div>
+
+        <!-- 在线检测 -->
         <div class="card">
             <h2>
                 <span data-lang="zh">在线检测</span>
@@ -350,6 +400,7 @@
             </div>
         </div>
 
+        <!-- QQ群 -->
         <div class="card qq-group-box">
             <h2>
                 <span data-lang="zh">如何加入服务器</span>
@@ -370,6 +421,7 @@
             </a>
         </div>
 
+        <!-- 玩家须知 -->
         <div class="card">
             <h2>
                 <span data-lang="zh">玩家须知</span>
