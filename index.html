@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tesseract - 服务器状态</title>
+    <link rel="icon" href="tudou.png" type="image/png">
+    <script>
+        (function() {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (!isDark) document.documentElement.classList.add('light-mode');
+            window.__systemTheme = isDark ? 'dark' : 'light';
+        })();
+    </script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback" async defer></script>
+    <style>
+        :root { --bg-body: #000000; --bg-card: #111111; --text-primary: #eeeeee; --text-secondary: #aaaaaa; --text-muted: #777777; --border-color: rgba(255,255,255,0.08); --shadow-color: rgba(0,0,0,0.45); --glass-bg: rgba(255,255,255,0.08); --glass-border: rgba(255,255,255,0.15); --glass-shadow: 0 4px 20px rgba(0,0,0,0.3); --btn-text: #fff; --switch-bg: #333; --switch-dot: #555; --switch-active: #4cd964; --card-bg-rgba: rgba(17,17,17,0.6); }
+        html.light-mode { --bg-body: #f5f5f5; --bg-card: #ffffff; --text-primary: #222222; --text-secondary: #555555; --text-muted: #000000; --border-color: rgba(0,0,0,0.08); --shadow-color: rgba(0,0,0,0.15); --glass-bg: rgba(255,255,255,0.35); --glass-border: rgba(255,255,255,0.5); --glass-shadow: 0 4px 20px rgba(0,0,0,0.1); --btn-text: #222; --switch-bg: #ddd; --switch-dot: #fff; --switch-active: #4cd964; --card-bg-rgba: rgba(255,255,255,0.7); }
+        html { background-color: var(--bg-body); } * { margin:0; padding:0; box-sizing:border-box; } html { scroll-behavior:smooth; }
+        body { background-color: transparent; color: var(--text-primary); font-family: "Microsoft Yahei", system-ui, sans-serif; min-height: 100vh; transition: background-color 0.3s, color 0.3s; position: relative; }
+        #bgLayer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100lvh; z-index: -2; background-color: var(--bg-body); background-repeat: no-repeat; background-size: cover; background-position: center; transition: opacity 0.6s ease; }
+        #bgOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100lvh; z-index: -1; background: rgba(0,0,0,0.35); transition: background 0.3s; }
+        html.light-mode #bgOverlay { background: transparent; }
+        .back-btn, .top-bar { position: absolute; top: 20px; z-index: 99; display: flex; gap: 12px; align-items: center; }
+        .back-btn { left: 16px; padding: 8px 14px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--btn-text); font-size: 15px; cursor: pointer; box-shadow: var(--glass-shadow); transition: all 0.25s ease; text-decoration: none; font-weight: 500; }
+        .top-bar { right: 16px; }
+        .back-btn:hover, .glass-btn:hover, .theme-switch:hover { transform: translateY(-2px) scale(1.02); background: var(--glass-bg); border-color: rgba(255,255,255,0.4); }
+        .back-btn:active, .glass-btn:active { transform: scale(0.97); }
+        .back-icon { font-size: 20px; line-height: 1; }
+        .glass-btn { padding: 8px 14px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--btn-text); font-size: 15px; cursor: pointer; box-shadow: var(--glass-shadow); transition: all 0.25s ease; display: flex; align-items: center; gap: 6px; font-weight: 500; }
+        .theme-switch { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 30px; box-shadow: var(--glass-shadow); cursor: pointer; transition: all 0.25s ease; user-select: none; }
+        .theme-switch .switch-track { width: 44px; height: 24px; background: var(--switch-bg); border-radius: 30px; position: relative; transition: background 0.3s; flex-shrink: 0; }
+        .theme-switch .switch-thumb { width: 18px; height: 18px; background: var(--switch-dot); border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        html.light-mode .theme-switch .switch-track { background: var(--switch-active); }
+        html.light-mode .theme-switch .switch-thumb { left: 23px; }
+        .theme-switch .switch-label { font-size: 14px; color: var(--btn-text); min-width: 32px; }
+        .container { max-width: 850px; margin: 0 auto; padding: 80px 16px 30px; position: relative; z-index: 1; }
+        .header { text-align: center; margin-bottom: 40px; padding: 50px 16px; background-color: var(--card-bg-rgba); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid var(--border-color); animation: fadeIn 0.6s ease-out; transition: background 0.3s, border 0.3s; }
+        h1 { font-size: clamp(32px,8vw,52px); color: #4cd964; letter-spacing: 4px; margin-bottom: 12px; text-shadow: 0 0 18px rgba(76, 217, 100, 0.5); }
+        .subtitle { font-size: clamp(16px,3vw,20px); color: var(--text-secondary); }
+        .card { background-color: var(--card-bg-rgba); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 12px; padding: clamp(20px,4vw,32px); margin-bottom: 22px; border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s, border 0.3s; animation: fadeIn 0.6s ease-out; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px var(--shadow-color); }
+        h2 { color: #73e086; margin-bottom: 16px; font-size: clamp(20px,4vw,26px); }
+        .server-item { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
+        .server-item:last-child { border-bottom: none; margin-bottom:0; padding-bottom:0; }
+        .server-head-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+        .server-info-line { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 15px; color: var(--text-secondary); }
+        .server-info-block { display: flex; align-items: center; gap: 10px; min-width: 0; }
+        .dot-online { color:#28c740; } .dot-offline { color:#e53935; } .warn-text { color:#ff6b6b; }
+        .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 14px; }
+        .extra-footer { margin-top:20px; text-align:center; font-size:13px; color: var(--text-muted); line-height:1.8; }
+        #refreshStatusBtn { padding:10px 22px; background:#3070d8; color:white; border:none; border-radius:8px; cursor:pointer; font-size:16px; }
+        #refreshStatusBtn:disabled { background:#444; cursor:not-allowed; }
+        .potato-icon { width: 26px; height: 26px; image-rendering: pixelated; vertical-align: middle; margin-right: 4px; }
+        .turnstile-container { display: none; flex-direction: column; align-items: center; margin: 16px 0; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @media (max-width: 480px) { .header { padding:30px 12px; } .back-btn { top:12px; left:8px; padding:6px 10px; font-size:13px; } .back-icon { font-size:16px; } .top-bar { top:12px; right:8px; gap:6px; flex-wrap:wrap; justify-content:flex-end; } .glass-btn { padding:6px 10px; font-size:13px; } .theme-switch { padding:4px 8px; } .theme-switch .switch-track { width:36px; height:20px; } .theme-switch .switch-thumb { width:14px; height:14px; top:3px; left:3px; } html.light-mode .theme-switch .switch-thumb { left:19px; } }
+        [data-lang="zh"] { display:block; } [data-lang="en"] { display:none; }
+        html.lang-en [data-lang="zh"] { display:none; } html.lang-en [data-lang="en"] { display:block; }
+    </style>
+</head>
+<body>
+    <div id="bgLayer"></div>
+    <div id="bgOverlay"></div>
+    <a class="back-btn" href="https://tesseract.kdns.fr"><span class="back-icon">←</span> <span id="backLabel">返回</span></a>
+    <div class="top-bar">
+        <button class="glass-btn" id="changeLangBtn"><span>🌐</span> <span id="langLabel">中文</span></button>
+        <div class="theme-switch" id="themeSwitch"><span class="switch-label" id="themeLabel">深色</span><div class="switch-track"><div class="switch-thumb"></div></div></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Tesseract</h1>
+            <div class="subtitle"><span data-lang="zh">服务器状态</span><span data-lang="en">Server Status</span></div>
+        </div>
+
+        <div class="card">
+            <h2><span data-lang="zh">服务器运行状态</span><span data-lang="en">Server Status</span></h2>
+            <div class="server-item"><div id="mainServerStatus"></div></div>
+            <div class="server-item"><div id="smallServerStatus"></div></div>
+            
+            <div id="turnstileWrapper" class="turnstile-container">
+                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">
+                    <span data-lang="zh">操作过于频繁，请完成人机验证</span><span data-lang="en">Too many requests, please verify</span>
+                </p>
+                <!-- ⚠️ 把这里的 YOUR_SITE_KEY 换成你的公钥 ⚠️ -->
+                <div id="turnstileWidget" class="cf-turnstile" data-sitekey="YOUR_SITE_KEY" data-callback="onTurnstileSuccess"></div>
+            </div>
+            
+            <div style="text-align:center;margin-top:12px;">
+                <button id="refreshStatusBtn"><span data-lang="zh">重新检测状态</span><span data-lang="en">Refresh Status</span></button>
+            </div>
+        </div>
+
+        <div class="footer">Tesseract Minecraft Server © 2026</div>
+        <div class="extra-footer"><div>Powered by Cloudflare</div><div>由 zwx5817 开发</div></div>
+    </div>
+
+    <script>
+        (function() {
+            const bgLayer = document.getElementById('bgLayer');
+            const TOTAL = 17; const idx = Math.floor(Math.random() * TOTAL) + 1; const url = 'beijing' + idx + '.jpg';
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                const img = new Image();
+                img.onload = function() {
+                    const W = bgLayer.clientWidth, H = bgLayer.clientHeight, w = img.naturalWidth, h = img.naturalHeight;
+                    const scale = Math.max(W / w, H / h), scaledW = w * scale, scaledH = h * scale;
+                    bgLayer.style.backgroundImage = `url('${url}')`; bgLayer.style.backgroundSize = scaledW + 'px ' + scaledH + 'px';
+                    bgLayer.style.backgroundPosition = '-' + (Math.random() * (scaledW - W)) + 'px -' + (Math.random() * (scaledH - H)) + 'px';
+                };
+                img.src = url;
+            } else {
+                bgLayer.style.backgroundImage = `url('${url}')`; bgLayer.style.backgroundSize = 'cover'; bgLayer.style.backgroundPosition = 'center';
+            }
+        })();
+
+        (function() {
+            const mainEl = document.getElementById('mainServerStatus');
+            const smallEl = document.getElementById('smallServerStatus');
+            const refreshBtn = document.getElementById('refreshStatusBtn');
+            const turnstileWrapper = document.getElementById('turnstileWrapper');
+            const changeLangBtn = document.getElementById('changeLangBtn');
+            const themeSwitch = document.getElementById('themeSwitch');
+            const langLabel = document.getElementById('langLabel');
+            const themeLabel = document.getElementById('themeLabel');
+            const backLabel = document.getElementById('backLabel');
+
+            let currentLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
+            let currentTheme = window.__systemTheme || 'dark';
+            let userOverride = false;
+            let cacheMain = null, cacheSmall = null;
+
+            const langText = {
+                zh: { loading:'检测中...', mainName:'大土豆', smallName:'小土豆', online:'在线', offline:'离线', mainOfflineWarn:'服务器可能正在被攻击', smallOfflineWarn:'可能是服主没开机（也有可能被打了）', player:'在线玩家：{now}/{max}，版本：{ver}', apiFail:'检测服务不可用', back:'返回' },
+                en: { loading:'Detecting...', mainName:'Main Server', smallName:'Small Server', online:'Online', offline:'Offline', mainOfflineWarn:'Server may be under attack', smallOfflineWarn:'Possibly the host has not turned on the server', player:'Players: {now}/{max}, Version: {ver}', apiFail:'Service unavailable', back:'Back' }
+            };
+
+            function applyTheme(theme) {
+                const isLight = theme === 'light';
+                document.documentElement.classList.toggle('light-mode', isLight);
+                themeSwitch.classList.toggle('light', isLight);
+                themeLabel.textContent = isLight ? '浅色' : '深色';
+                currentTheme = theme;
+            }
+            const darkMedia = window.matchMedia('(prefers-color-scheme: dark)');
+            darkMedia.addEventListener('change', (e) => { if (!userOverride) applyTheme(e.matches ? 'dark' : 'light'); });
+            themeSwitch.addEventListener('click', (e) => { e.stopPropagation(); applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); userOverride = true; });
+            applyTheme(window.__systemTheme || (darkMedia.matches ? 'dark' : 'light'));
+
+            function setLang(lang) {
+                currentLang = lang;
+                document.documentElement.classList.toggle('lang-en', lang === 'en');
+                langLabel.textContent = lang === 'zh' ? '中文' : 'English';
+                backLabel.textContent = lang === 'zh' ? '返回' : 'Back';
+                renderAll();
+            }
+            changeLangBtn.addEventListener('click', () => setLang(currentLang === 'zh' ? 'en' : 'zh'));
+
+            function showLoading() {
+                const L = langText[currentLang];
+                const icon = `<img src="tudou.png" class="potato-icon">`;
+                mainEl.innerHTML = `<div class="server-head-row"><div>${icon} ${L.mainName}</div></div><div class="server-info-line"><div class="server-info-block">${L.loading}</div></div>`;
+                smallEl.innerHTML = `<div class="server-head-row"><div>${icon} ${L.smallName}</div></div><div class="server-info-line"><div class="server-info-block">${L.loading}</div></div>`;
+            }
+
+            function renderAll() {
+                const L = langText[currentLang];
+                function render(el, data, nameKey, offlineKey) {
+                    const nameWithIcon = `<img src="tudou.png" class="potato-icon"> ${L[nameKey]}`;
+                    if (data === null) { el.innerHTML = `<div class="server-head-row"><div>${nameWithIcon}</div></div><div class="server-info-line"><span class="warn-text">${L.apiFail}</span></div>`; return; }
+                    if (data.online) {
+                        const ver = typeof data.version === 'string' ? data.version : (data.version.name_clean || 'Unknown');
+                        const pText = L.player.replace('{now}', data.players.online).replace('{max}', data.players.max).replace('{ver}', ver);
+                        el.innerHTML = `<div class="server-head-row"><div>${nameWithIcon}</div></div><div class="server-info-line"><div class="server-info-block"><span class="dot-online">●</span><span>${L.online}</span><span>—</span><span>${pText}</span></div></div>`;
+                    } else {
+                        el.innerHTML = `<div class="server-head-row"><div>${nameWithIcon}</div></div><div class="server-info-line"><div class="server-info-block"><span class="dot-offline">●</span><span>${L.offline}</span></div></div><div class="server-warn-line warn-text">${L[offlineKey]}</div>`;
+                    }
+                }
+                if (cacheMain === null && cacheSmall === null) { showLoading(); return; }
+                if (cacheMain !== null) render(mainEl, cacheMain, 'mainName', 'mainOfflineWarn'); else showLoading();
+                if (cacheSmall !== null) render(smallEl, cacheSmall, 'smallName', 'smallOfflineWarn'); else showLoading();
+            }
+
+            // 核心请求：所有请求都发往你配置好的后端 /api/status
+            async function fetchServerStatus(token = '') {
+                showLoading();
+                refreshBtn.disabled = true;
+                try {
+                    const res = await fetch('/api/status', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: token })
+                    });
+                    
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    
+                    const data = await res.json();
+                    cacheMain = data.main;
+                    cacheSmall = data.small;
+                    renderAll();
+                } catch (e) {
+                    console.error(e);
+                    cacheMain = null; cacheSmall = null; renderAll();
+                } finally {
+                    refreshBtn.disabled = false;
+                }
+            }
+
+            // 首次加载：直接请求，不带 token
+            fetchServerStatus('');
+
+            // 用户点击：隐藏按钮，弹出验证
+            refreshBtn.addEventListener('click', function() {
+                refreshBtn.style.display = 'none';
+                turnstileWrapper.style.display = 'flex';
+                if (window.turnstile) turnstile.reset('#turnstileWidget');
+            });
+
+            // 验证成功回调
+            window.onTurnstileSuccess = function(token) {
+                turnstileWrapper.style.display = 'none';
+                refreshBtn.style.display = 'inline-block';
+                fetchServerStatus(token); // 带着 Token 去请求后端
+            };
+
+            setLang(currentLang);
+        })();
+    </script>
+</body>
+</html>
