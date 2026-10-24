@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tesseract - Minecraft Server</title>
+    <link rel="icon" href="tudou.png" type="image/png">
+    <script>
+        (function() {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (!isDark) document.documentElement.classList.add('light-mode');
+            window.__systemTheme = isDark ? 'dark' : 'light';
+        })();
+    </script>
+    <style>
+        :root { --bg-body: #000000; --bg-card: #111111; --text-primary: #eeeeee; --text-secondary: #aaaaaa; --text-muted: #777777; --border-color: rgba(255,255,255,0.08); --shadow-color: rgba(0,0,0,0.45); --glass-bg: rgba(255,255,255,0.08); --glass-border: rgba(255,255,255,0.15); --glass-shadow: 0 4px 20px rgba(0,0,0,0.3); --btn-text: #fff; --switch-bg: #333; --switch-dot: #555; --switch-active: #4cd964; --card-bg-rgba: rgba(17,17,17,0.6); }
+        html.light-mode { --bg-body: #f5f5f5; --bg-card: #ffffff; --text-primary: #222222; --text-secondary: #555555; --text-muted: #000000; --border-color: rgba(0,0,0,0.08); --shadow-color: rgba(0,0,0,0.15); --glass-bg: rgba(255,255,255,0.35); --glass-border: rgba(255,255,255,0.5); --glass-shadow: 0 4px 20px rgba(0,0,0,0.1); --btn-text: #222; --switch-bg: #ddd; --switch-dot: #fff; --switch-active: #4cd964; --card-bg-rgba: rgba(255,255,255,0.7); }
+        html { background-color: var(--bg-body); } * { margin:0; padding:0; box-sizing:border-box; } html { scroll-behavior:smooth; }
+        body { background-color: transparent; color: var(--text-primary); font-family: "Microsoft Yahei", system-ui, sans-serif; min-height: 100vh; transition: background-color 0.3s, color 0.3s; position: relative; }
+        #bgLayer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100lvh; z-index: -2; background-color: var(--bg-body); background-repeat: no-repeat; background-size: cover; background-position: center; transition: opacity 0.6s ease; }
+        #bgOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100lvh; z-index: -1; background: rgba(0,0,0,0.35); transition: background 0.3s; }
+        html.light-mode #bgOverlay { background: transparent; }
+        .top-bar { position: absolute; top: 20px; right: 16px; z-index: 99; display: flex; gap: 12px; align-items: center; }
+        .glass-btn { padding: 8px 14px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--btn-text); font-size: 15px; cursor: pointer; box-shadow: var(--glass-shadow); transition: all 0.25s ease; display: flex; align-items: center; gap: 6px; font-weight: 500; letter-spacing: 0.3px; }
+        .glass-btn:hover { transform: translateY(-2px) scale(1.02); background: var(--glass-bg); border-color: rgba(255,255,255,0.4); }
+        .glass-btn:active { transform: scale(0.97); }
+        .theme-switch { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 30px; box-shadow: var(--glass-shadow); cursor: pointer; transition: all 0.25s ease; user-select: none; }
+        .theme-switch:hover { transform: translateY(-2px); }
+        .theme-switch .switch-track { width: 44px; height: 24px; background: var(--switch-bg); border-radius: 30px; position: relative; transition: background 0.3s; flex-shrink: 0; }
+        .theme-switch .switch-thumb { width: 18px; height: 18px; background: var(--switch-dot); border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        html.light-mode .theme-switch .switch-track { background: var(--switch-active); }
+        html.light-mode .theme-switch .switch-thumb { left: 23px; }
+        .theme-switch .switch-label { font-size: 14px; color: var(--btn-text); min-width: 32px; }
+        .container { max-width: 850px; margin: 0 auto; padding: 80px 16px 30px; position: relative; z-index: 1; }
+        .header { text-align: center; margin-bottom: 40px; padding: 50px 16px; background-color: var(--card-bg-rgba); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; border: 1px solid var(--border-color); animation: fadeIn 0.6s ease-out; transition: background 0.3s, border 0.3s; }
+        h1 { font-size: clamp(32px,8vw,52px); color: #4cd964; letter-spacing: 4px; margin-bottom: 12px; text-shadow: 0 0 18px rgba(76, 217, 100, 0.5); }
+        .subtitle { font-size: clamp(16px,3vw,20px); color: var(--text-secondary); }
+        .card { background-color: var(--card-bg-rgba); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 12px; padding: clamp(20px,4vw,32px); margin-bottom: 22px; border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s, border 0.3s; animation: fadeIn 0.6s ease-out; }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px var(--shadow-color); }
+        h2 { color: #73e086; margin-bottom: 16px; font-size: clamp(20px,4vw,26px); }
+        p { line-height: 1.8; font-size: clamp(15px,2.5vw,16px); color: var(--text-primary); margin-bottom: 12px; }
+        .video-tabs { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 16px; margin-bottom: 14px; }
+        .video-tab { display: inline-flex; align-items: center; gap: 8px; padding: 9px 22px; border-radius: 30px; border: 1px solid var(--border-color); background: var(--glass-bg); color: var(--btn-text); font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.25s ease; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); font-family: inherit; }
+        .video-tab:hover { transform: translateY(-2px); }
+        .video-tab:active { transform: scale(0.96); }
+        .video-tab svg { width: 18px; height: 18px; flex-shrink: 0; }
+        .video-tab[data-tab="bilibili"].active { background: #fb7299; border-color: #fb7299; color: #fff; box-shadow: 0 4px 15px rgba(251,114,153,0.45); }
+        .video-tab[data-tab="github"].active { background: #24292e; border-color: #24292e; color: #fff; box-shadow: 0 4px 15px rgba(36,41,46,0.45); }
+        html.light-mode .video-tab[data-tab="github"] { color: #222; }
+        html.light-mode .video-tab[data-tab="github"].active { color: #fff; }
+        .video-frame { position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; border: 1px solid var(--border-color); background: #000; margin-top: 8px; }
+        .video-pane { display: none; width: 100%; height: 100%; }
+        .video-pane.active { display: block; animation: paneFade 0.4s ease; }
+        .video-pane iframe, .video-pane video { width: 100%; height: 100%; display: block; border: none; }
+        @keyframes paneFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #switch-toast { position: absolute; top: 16px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 14px; display: none; z-index: 10; pointer-events: none; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2); white-space: nowrap; }
+        .source-selector { margin-top: 12px; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 14px; color: var(--text-secondary); padding: 0 10px; }
+        .source-selector select { padding: 6px 12px; border-radius: 6px; background: var(--card-bg-rgba); border: 1px solid var(--border-color); color: var(--text-primary); font-family: inherit; font-size: 14px; outline: none; cursor: pointer; backdrop-filter: blur(4px); max-width: 100%; text-overflow: ellipsis; }
+        .video-credit { font-size: 13px; color: var(--text-muted); margin-top: 12px; margin-bottom: 0; text-align: center; }
+        .video-credit a { color: #54a0ff; text-decoration: none; }
+        .video-credit a:hover { text-decoration: underline; }
+        .qq-group-box { background-color: var(--card-bg-rgba); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: clamp(20px,4vw,28px); border-radius: 10px; text-align: center; border: 1px solid var(--border-color); }
+        .qq-num { font-size: clamp(22px,5vw,30px); color: #54a0ff; font-weight: bold; margin:14px 0; text-shadow: 0 0 14px rgba(84,160,255,0.4); }
+        .qq-link-btn { display: inline-block; padding: 12px 28px; background-color: #54a0ff; color: #ffffff; text-decoration: none; border-radius: 8px; transition: transform 0.25s ease; }
+        .qq-link-btn:hover { transform: translateY(-6px); }
+        .hot-tip { background-color: rgba(255, 150, 0, 0.15); border: 1px solid rgba(255,150,0,0.3); padding: 16px; border-radius: 10px; margin-top: 15px; }
+        .hot-tip p { color: #ffc873; font-weight:500; margin:0; }
+        .footer { text-align: center; margin-top: 50px; color: var(--text-muted); font-size: 14px; }
+        .extra-footer { margin-top:20px; text-align:center; font-size:13px; color: var(--text-muted); line-height:1.8; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @media (max-width: 480px) { 
+            .header { padding:30px 12px; } 
+            .top-bar { top: 12px; right: 8px; gap:6px; flex-wrap:wrap; justify-content:flex-end; } 
+            .glass-btn { padding:6px 10px; font-size:13px; } 
+            .theme-switch { padding:4px 8px; } 
+            .theme-switch .switch-track { width:36px; height:20px; } 
+            .theme-switch .switch-thumb { width:14px; height:14px; top:3px; left:3px; } 
+            html.light-mode .theme-switch .switch-thumb { left:19px; } 
+            .video-tab { padding: 8px 16px; font-size: 14px; gap: 6px; } 
+            .video-tab svg { width: 16px; height: 16px; } 
+            .source-selector { flex-direction: column; gap: 4px; } 
+        }
+        @media (orientation: landscape) and (max-height: 500px) {
+            .container { padding-top: 50px; }
+            .video-frame { max-height: 60vh; }
+        }
+        [data-lang="zh"] { display:block; } [data-lang="en"] { display:none; }
+        html.lang-en [data-lang="zh"] { display:none; } html.lang-en [data-lang="en"] { display:block; }
+    </style>
+</head>
+<body>
+    <div id="bgLayer"></div>
+    <div id="bgOverlay"></div>
+    <div class="top-bar">
+        <button class="glass-btn" id="changeLangBtn"><span>🌐</span> <span id="langLabel">中文</span></button>
+        <div class="theme-switch" id="themeSwitch"><span class="switch-label" id="themeLabel">深色</span><div class="switch-track"><div class="switch-thumb"></div></div></div>
+    </div>
+
+    <div class="container">
+        <div class="header"><h1>Tesseract</h1><div class="subtitle"><span data-lang="zh">Minecraft 服务器</span><span data-lang="en">Minecraft Server</span></div></div>
+
+        <div class="card">
+            <h2><span data-lang="zh">服务器介绍</span><span data-lang="en">About Server</span></h2>
+            <p data-lang="zh">欢迎来到 Tesseract Minecraft服务器！</p>
+            <p data-lang="en">Welcome to Tesseract Minecraft Server!</p>
+            <p data-lang="zh">这里是一个友好的Minecraft游戏社区，在这里你可以自由建造、生电研究，和小伙伴一同游玩。</p>
+            <p data-lang="en">This is a friendly Minecraft community. You can build freely, study redstone contraptions and play with friends.</p>
+            <p data-lang="zh">本服务器实行入群审核制度，想要进入服务器游玩，必须加入QQ审核群完成审核，审核通过后才可进入游戏。</p>
+            <p data-lang="en">This server requires QQ‑group verification. You must join the QQ group and pass review before joining.</p>
+            <div class="hot-tip"><p data-lang="zh">🔥 热知识：服务器可以用矿透</p><p data-lang="en">🔥 Tip: X‑ray is allowed on the server</p></div>
+        </div>
+
+        <div class="card">
+            <h2><span data-lang="zh">实机游玩</span><span data-lang="en">Gameplay</span></h2>
+            <p data-lang="zh">来看看我们在服务器里的日常吧！这是一段真实的游戏录像，希望能让你感受到 Tesseract 的乐趣。</p>
+            <p data-lang="en">Take a look at our daily life on the server! This is a real gameplay recording — hope it gives you a taste of what Tesseract is like.</p>
+            
+            <div class="video-tabs">
+                <button class="video-tab" data-tab="bilibili">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.658.373-.907l.027-.027c.267-.249.573-.373.92-.373.347 0 .653.124.92.373L9.653 4.44c.071.071.134.142.187.213h4.267a.836.836 0 0 1 .16-.213l2.853-2.747c.267-.249.573-.373.92-.373.347 0 .662.151.929.4.267.249.391.551.391.907 0 .355-.124.657-.373.906zM5.333 7.24c-.746.018-1.373.276-1.88.773-.506.498-.769 1.13-.786 1.894v7.52c.017.764.28 1.395.786 1.893.507.498 1.134.756 1.88.773h13.334c.746-.017 1.373-.275 1.88-.773.506-.498.769-1.129.786-1.893v-7.52c-.017-.765-.28-1.396-.786-1.894-.507-.497-1.134-.755-1.88-.773zM8 11.107c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386zm8 0c.373 0 .684.124.933.373.25.249.383.569.4.96v1.173c-.017.391-.15.711-.4.96-.249.25-.56.374-.933.374s-.684-.125-.933-.374c-.25-.249-.383-.569-.4-.96V12.44c0-.373.129-.689.386-.947.258-.257.574-.386.947-.386z"/></svg>
+                    <span>Bilibili</span>
+                </button>
+                <button class="video-tab" data-tab="github">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                    <span>GitHub</span>
+                </button>
+            </div>
+
+            <div class="video-frame" id="videoContainer">
+                <div id="switch-toast">网络较慢，正在切换播放线路...</div>
+                <div class="video-pane" id="pane-bilibili"><iframe src="//player.bilibili.com/player.html?isOutside=true&aid=117370383242626&bvid=BV1mcam6fEZf&cid=42393012230&p=1&high_quality=1&danmaku=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe></div>
+                <div class="video-pane" id="pane-github"><video id="ghVideo" controls preload="metadata" playsinline referrerpolicy="no-referrer"></video></div>
+            </div>
+            
+            <div class="source-selector" id="sourceSelector" style="display:none;">
+                <span>当前播放源：</span>
+                <select id="sourceSelect"></select>
+            </div>
+
+            <p class="video-credit"><span data-lang="zh">拍摄者：.Yezc1112 <a href="https://b23.tv/r2F9IoW" target="_blank">[去他的B站主页]</a></span><span data-lang="en">Recorded by .Yezc1112 <a href="https://b23.tv/r2F9IoW" target="_blank">[Visit his Bilibili]</a></span></p>
+        </div>
+
+        <div class="card">
+            <h2><span data-lang="zh">在线检测</span><span data-lang="en">Online Status</span></h2>
+            <p data-lang="zh">什么你进不去服务器快来看一下我们的至尊烤土豆有没有在线吧？</p>
+            <p data-lang="en">If you can't get into the server, please click the button below to check if the server is online.</p>
+            <div style="text-align:center;margin-top:16px;"><a class="qq-link-btn" href="https://online-test.tesseract.kdns.fr" target="_blank"><span data-lang="zh">戳我去看看烤土豆</span><span data-lang="en">Click me to check if the server is online</span></a></div>
+        </div>
+
+        <div class="card qq-group-box">
+            <h2><span data-lang="zh">如何加入服务器</span><span data-lang="en">How To Join</span></h2>
+            <p data-lang="zh">请加入我们的QQ审核群完成玩家审核</p>
+            <p data-lang="en">Join our QQ group for player verification</p>
+            <div class="qq-num"><span data-lang="zh">QQ审核群群号：</span><span data-lang="en">QQ Group ID:</span>421642410</div>
+            <p data-lang="zh">加入群聊后，请阅读群公告完成审核流程，审核通过即可获取服务器相关信息。</p>
+            <p data-lang="en">Read group announcement after joining. You will get server information after verification.</p>
+            <a class="qq-link-btn" href="https://qm.qq.com/q/Ge9hOklVeu" target="_blank"><span data-lang="zh">戳我直达QQ群 ↗</span><span data-lang="en">Open QQ Group ↗</span></a>
+        </div>
+
+        <div class="card">
+            <h2><span data-lang="zh">玩家须知</span><span data-lang="en">Rules</span></h2>
+            <p data-lang="zh">❶ 入群后请遵守群规与服务器规则，禁止恶意破坏他人建筑。</p>
+            <p data-lang="en">❶ Follow group and server rules. Griefing other people's builds is forbidden.</p>
+            <p data-lang="zh">❷ 所有玩家必须经过审核，未审核账号无法连接服务器。</p>
+            <p data-lang="en">❷ All players need verification. Unverified accounts cannot connect.</p>
+            <p data-lang="zh">❸ 若无法加入群聊，请核对QQ群号码。</p>
+            <p data-lang="en">❸ If you cannot join group, double‑check group number.</p>
+        </div>
+
+        <div class="footer">Tesseract Minecraft Server © 2026</div>
+        <div class="extra-footer"><div>Powered by Cloudflare</div><div>由 zwx5817 开发</div></div>
+    </div>
+
+    <script>
+        // 1. 背景逻辑
+        (function() {
+            const bgLayer = document.getElementById('bgLayer'); const TOTAL = 17; const idx = Math.floor(Math.random() * TOTAL) + 1; const url = 'beijing' + idx + '.jpg';
+            if (window.matchMedia('(max-width: 768px)').matches) {
+                const img = new Image(); img.onload = function() {
+                    const W = bgLayer.clientWidth, H = bgLayer.clientHeight, w = img.naturalWidth, h = img.naturalHeight;
+                    const scale = Math.max(W / w, H / h), scaledW = w * scale, scaledH = h * scale;
+                    bgLayer.style.backgroundImage = `url('${url}')`; bgLayer.style.backgroundSize = scaledW + 'px ' + scaledH + 'px';
+                    bgLayer.style.backgroundPosition = '-' + (Math.random() * (scaledW - W)) + 'px -' + (Math.random() * (scaledH - H)) + 'px';
+                }; img.src = url;
+            } else {
+                bgLayer.style.backgroundImage = `url('${url}')`; bgLayer.style.backgroundSize = 'cover'; bgLayer.style.backgroundPosition = 'center';
+            }
+        })();
+
+        // 2. 主题与语言
+        (function() {
+            const changeLangBtn = document.getElementById('changeLangBtn'); const langLabel = document.getElementById('langLabel'); const themeSwitch = document.getElementById('themeSwitch'); const themeLabel = document.getElementById('themeLabel');
+            let currentLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
+            function setLang(lang) { currentLang = lang; document.documentElement.classList.toggle('lang-en', lang === 'en'); langLabel.textContent = lang === 'zh' ? '中文' : 'English'; }
+            setLang(currentLang); changeLangBtn.addEventListener('click', function() { setLang(currentLang === 'zh' ? 'en' : 'zh'); });
+
+            let currentTheme = window.__systemTheme || 'dark'; let userOverride = false;
+            function applyTheme(theme) {
+                const isLight = theme === 'light'; document.documentElement.classList.toggle('light-mode', isLight);
+                themeSwitch.classList.toggle('light', isLight); themeLabel.textContent = isLight ? '浅色' : '深色'; currentTheme = theme;
+            }
+            const darkMedia = window.matchMedia('(prefers-color-scheme: dark)'); darkMedia.addEventListener('change', (e) => { if (!userOverride) applyTheme(e.matches ? 'dark' : 'light'); });
+            themeSwitch.addEventListener('click', function(e) { e.stopPropagation(); applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); userOverride = true; });
+            applyTheme(window.__systemTheme || (darkMedia.matches ? 'dark' : 'light'));
+        })();
+
+        // 3. 视频逻辑
+        (function() {
+            const tabs = document.querySelectorAll('.video-tab'); 
+            const paneBili = document.getElementById('pane-bilibili'); 
+            const paneGh = document.getElementById('pane-github'); 
+            const ghVideo = document.getElementById('ghVideo'); 
+            const switchToast = document.getElementById('switch-toast');
+            const sourceSelector = document.getElementById('sourceSelector');
+            const sourceSelect = document.getElementById('sourceSelect');
+            
+            const originalUrl = "https://github.com/zwx5817/tesseract/releases/download/video/shiji.mp4";
+            
+            const proxyList = [
+                { name: "直连官方 (可能较慢)", url: "" },
+                { name: "gh-proxy.com", url: "https://gh-proxy.com/" },
+                { name: "ghproxy.net", url: "https://ghproxy.net/" },
+                { name: "ghfast.top", url: "https://ghfast.top/" },
+                { name: "github.moeyy.xyz", url: "https://github.moeyy.xyz/" }
+            ];
+
+            let currentProxyIndex = 1; 
+            let isSwitching = false; 
+            let bufferingTimer = null;
+            let hasSpeedTested = false;
+
+            proxyList.forEach((proxy, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = proxy.name;
+                sourceSelect.appendChild(option);
+            });
+
+            function getCurrentUrl() { return proxyList[currentProxyIndex].url + originalUrl; }
+
+            async function testSpeed(url) {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3000);
+                const start = performance.now();
+                try {
+                    await fetch(url, { method: 'GET', headers: { 'Range': 'bytes=0-50000' }, signal: controller.signal, cache: 'no-store' });
+                    clearTimeout(timeoutId);
+                    return performance.now() - start;
+                } catch (e) { clearTimeout(timeoutId); return Infinity; }
+            }
+
+            async function findFastestProxy() {
+                switchToast.style.display = 'block';
+                switchToast.textContent = '正在智能测速，选择最佳线路...';
+                const promises = proxyList.map(async (proxy, index) => {
+                    if (index === 0) return { index, time: Infinity };
+                    const time = await testSpeed(proxy.url + originalUrl);
+                    return { index, time };
+                });
+                const results = await Promise.all(promises);
+                results.sort((a, b) => a.time - b.time);
+                const best = results[0];
+                if (best.time !== Infinity) currentProxyIndex = best.index;
+                else currentProxyIndex = 1; 
+                sourceSelect.value = currentProxyIndex;
+                switchToast.style.display = 'none';
+                hasSpeedTested = true;
+                return getCurrentUrl();
+            }
+
+            function switchToNextProxy() {
+                if (isSwitching) return;
+                let nextIndex = currentProxyIndex + 1;
+                if (nextIndex >= proxyList.length) nextIndex = 1;
+                if (nextIndex === currentProxyIndex) {
+                    switchToast.textContent = "所有播放源均失效，请刷新重试";
+                    switchToast.style.display = 'block';
+                    return;
+                }
+                isSwitching = true;
+                const savedTime = ghVideo.currentTime;
+                switchToast.style.display = 'block';
+                switchToast.textContent = "网络较慢，正在切换至 " + proxyList[nextIndex].name;
+                currentProxyIndex = nextIndex;
+                sourceSelect.value = currentProxyIndex;
+                ghVideo.dataset.resumeTime = savedTime;
+                ghVideo.src = getCurrentUrl();
+                ghVideo.load();
+            }
+
+            ghVideo.addEventListener('error', () => { clearTimeout(bufferingTimer); switchToNextProxy(); });
+            ghVideo.addEventListener('waiting', () => { clearTimeout(bufferingTimer); bufferingTimer = setTimeout(switchToNextProxy, 15000); });
+            ghVideo.addEventListener('playing', () => { clearTimeout(bufferingTimer); isSwitching = false; switchToast.style.display = 'none'; });
+            ghVideo.addEventListener('canplay', () => {
+                clearTimeout(bufferingTimer);
+                const rTime = parseFloat(ghVideo.dataset.resumeTime);
+                if (rTime && rTime > 0) { ghVideo.currentTime = rTime; ghVideo.removeAttribute('data-resume-time'); }
+            });
+
+            sourceSelect.addEventListener('change', function() {
+                const newIndex = parseInt(this.value);
+                if (newIndex === currentProxyIndex) return;
+                const savedTime = ghVideo.currentTime;
+                currentProxyIndex = newIndex;
+                switchToast.style.display = 'block';
+                switchToast.textContent = "正在切换至 " + proxyList[currentProxyIndex].name;
+                isSwitching = true;
+                ghVideo.dataset.resumeTime = savedTime;
+                ghVideo.src = getCurrentUrl();
+                ghVideo.load();
+            });
+
+            async function activateTab(target) {
+                tabs.forEach(t => t.classList.toggle('active', t.getAttribute('data-tab') === target));
+                if (target === 'bilibili') {
+                    paneBili.classList.add('active'); 
+                    paneGh.classList.remove('active'); 
+                    sourceSelector.style.display = 'none';
+                    ghVideo.pause();
+                } else {
+                    paneGh.classList.add('active'); 
+                    paneBili.classList.remove('active'); 
+                    sourceSelector.style.display = 'flex';
+                    const i = paneBili.querySelector('iframe'); 
+                    if(i){ const s = i.src; i.src = s; }
+                    if (!hasSpeedTested) {
+                        const bestUrl = await findFastestProxy();
+                        ghVideo.src = bestUrl;
+                    } else {
+                        ghVideo.src = getCurrentUrl();
+                    }
+                }
+            }
+
+            if (window.matchMedia('(max-width: 768px)').matches) activateTab('bilibili');
+            else activateTab('github');
+            tabs.forEach(tab => tab.addEventListener('click', () => activateTab(tab.getAttribute('data-tab'))));
+        })();
+    </script>
+</body>
+</html>
